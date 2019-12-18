@@ -34,27 +34,37 @@ class Game:
         points = [] 
         
 
-
-        for i in range( self.length_grid - 1 ):
+        for i in range( self.length_grid ):
             
             current_row_rectangles = []
                 
             Point_1 = Point( 0 , 0 ) 
             for j in range( self.width_grid ):
                 
-                current_row = float(self.length_grid) / float(self.length_window)
-                current_column = float(self.width_grid) / float(self.width_window) 
+                current_row = float(self.length_window) / float(self.length_grid)
+                current_column = float(self.width_window) / float(self.width_grid) 
                 
-                Point_2 = Point_1
+                # Point_2 = Point_1
                 Point_1 = Point( current_row * i , current_column * j )  
-                # Point_2 = Point( current_row * (i + 1) , current_column * (j + 1) )
+                Point_2 = Point( current_row * (i + 1) , current_column * (j + 1) )
                 
                 current_row_rectangles.append( Rectangle(Point_1, Point_2 ) )
 
 
             # Append the next row to the array
-            rectangles.append(current_row)
+            rectangles.append(current_row_rectangles)
 
-            
+        
+        # Traverse the list of the rectangles to change their fill colors
+        for i in  range( len( rectangles  ) ):
+            for j in range( len(rectangles[i] ) ):
+                
+                rectangles[i][j].draw(self.window)
+                rectangles[i][j].setFill("White")
+        
+
+        # Draw lines over the original grid?
+          
+
             
     

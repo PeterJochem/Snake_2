@@ -8,14 +8,12 @@ import graphics
 
 ############ Main ##################
 
-print("Hello World")
-
 # Create game 
 # Run the game's logic
-myGame = Game(10, 5, 500, 500)
+myGame = Game(20, 20, 600, 500)
 myGame.drawBoard()
 
-
+myGame.drawBoard()
 
 
 
