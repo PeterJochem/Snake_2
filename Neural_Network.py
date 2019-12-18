@@ -49,9 +49,8 @@ class Neural_Network:
 
         for i in range(len(inVector) ):
 
-           returnVector[i] = (np.e ** inVector[i]  ) / integral   
-    
-        
+           returnVector[i] = (np.e ** inVector[i] ) / integral   
+     
         print( returnVector )
         return returnVector
 
@@ -60,19 +59,22 @@ class Neural_Network:
     # Input: an input vector to forward propogate 
     # Output: The maximum index of the output vector
     def forwardProp(self, inputVector):
-    
-        # print("")
-        # print( np.matmul( inputVector, self.w1.T) + self.bias_1   )
-        # print("")
+        
+        print("The input is " + str(inputVector) )
+        print("")
         layer_1 = self.relu( np.matmul( inputVector, self.w1.T) + self.bias_1 )   
         
+        print("layer_1 is " + str(layer_1) )
+        print("")
 
         # Use the softmax function at the output layer
-        outputVector = self.softmax( np.matmul( layer_1, self.w2) + self.bias_2 )
+        outputVector = self.softmax( np.matmul( layer_1, self.w2 ) + self.bias_2 )
         
+        print("The output vector is " + str(outputVector) )
+        print("")
+
         # Return the max index of the output vector
         return np.argmax( outputVector )
-
 
 
     # This method takes itself and a mate's weights
@@ -89,7 +91,7 @@ class Neural_Network:
 
 myNN = Neural_Network()
 
-inputVector = np.array([0.0, 0.0, 0.0, 0.0])
+inputVector = np.array([1.0, 1.0, 1.0, 1.0])
 
 print( myNN.forwardProp( inputVector  ) )
 

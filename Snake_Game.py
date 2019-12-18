@@ -12,7 +12,9 @@ print("Hello World")
 
 # Create game 
 # Run the game's logic
-myGame = Game()
+myGame = Game(10, 5, 500, 500)
+myGame.drawBoard()
+
 
 
 
