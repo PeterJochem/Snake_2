@@ -26,6 +26,12 @@ while ( True ):
         # myGame.rectangles[0].setFill()
             
         time.sleep(0.5)
+        
+        # Compute the next input vector
+        # Forward prop the inputVector
+        # Convert the NN's output to a direction
+        nextDirection = myGame.  
+        
         myGame.nextState( moves[i] )
          
 

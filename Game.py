@@ -4,6 +4,7 @@ import numpy as np
 from snake import Snake
 from graphics import *
 from random import random
+import Neural_Network
 
 class Game: 
         
@@ -32,6 +33,107 @@ class Game:
         # A tuple of the current food's location
         self.current_food = self.placeFood()
         
+        self.neural_network = Neural_Network()
+
+
+    def distance_wall(self, x, y):
+
+        # Check that the (x, y) pair is legal
+        if ( (x < 0) or (y < 0) or (x >= self.width_window) or (y >= self.length_window) ):
+            # EXPLAIN THIS
+            np.sqrt( ( self.width_window**2) + ( self.length_window**2) )
+
+        return = np.sqrt( ( (x - self.width_window)**2) + ( (y - self.length_window)**2) )
+         
+    # Describe the inputs
+    # FIX ME - add the diagonals!!!!!
+    def distance_body(self, x, y, forward):
+
+        # Check that the (x, y) pair is legal    
+        if ( (x < 0) or (y < 0) or (x >= self.width_window) or (y >= self.length_window) ):
+            return -1
+       
+        # Traverse in this direction to see how far we are to any body part
+        # Set this to the high vaue to avoid discontinuity in the statistic!
+        # -1 is good, 0 is the worst, larger from there is better
+        linear_to_body_x = self.width_window
+        linear_to_body_y = self.length_window
+
+        # Traverse the x-dimension forwards
+        for i in range( self.width_window - x ):
+            
+            if ( self.snake.isBody(x + i, y)  ):
+                linear_to_body_x_forward = i 
+                break  
+        
+        # Traverse the x-dimension backwards
+        for i in range( x ):
+
+            if ( self.snake.isBody(x - i, y)  ):
+                linear_to_body_x_backwards = i
+                break
+        
+        # Traverse the y-dimension forwards
+        for i in range( self.length_window - y ):
+
+            if ( self.snake.isBody(x, y + i)  ):
+                linear_to_body_y_forward = i                    
+                break
+
+        # Traverse the y-dimension backwards
+        for i in range( y ):
+
+            if ( self.snake.isBody(x, y - i)  ):
+                linear_to_body_y_backwards = i
+                break
+        
+        # Return the tuple
+        return [linear_to_body_x_forward, linear_to_body_y_forward] 
+            
+
+
+    def distance_food(self, x, y)
+
+        # Check that the (x,y) pair is legal
+        if ( (x < 0) or (y < 0) or (x >= self.width_window) or (y >= self.length_window) ):
+            return -1
+        
+        return np.sqrt( ( (x - self.current_food[0])**2) + ( (y - self.current_food[1])**2) )
+
+
+    
+    # This method takes the game state and computes the in vector
+    # that will go to the neural network
+    # Input: 
+    # Output: N x ? np.array
+    def compute_In_Vector()
+        
+        # FIX ME!!
+        # Let's start with just the 4 neighbor
+        numNeighbors = 4
+        length = numNeighbors * numStats
+        returnVector = np.zeros(length)
+
+        # Statistics
+        # One-dimensional Distance to wall in that direction
+        # Distance to food if we move to that location
+        # Distance to the body? 
+            # 0 if no such body part in that direction
+        
+        # Create a list of tuples of each of the x and y locations
+        # The statistic methods will check if the locations are legal or not 
+        neighbors_list = generate_4_Neighbors() 
+
+
+        for i in range( len(neighbors_list) ):
+            
+            returnVector[i] = distance_food() 
+            returnVector[i + 1] = distance_wall()
+            returnVector[i + 2] = distance_body()
+
+        return returnVector
+        
+
 
     def placeFood(self):
             
