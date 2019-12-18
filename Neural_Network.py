@@ -1,14 +1,18 @@
 # This file implements the neural network
 
 import numpy as np
-
+import random
 
 
 class Neural_Network:
 
 
     def __init__(self, numInputs, numHidden, numOutput):
-    
+        
+        self.numInputs = numInputs
+        self.numHidden = numHidden
+        self.numOutput = numOutput
+
         # Pass in the size of the input
         self.w1 = self.init_Weights(numInputs, numHidden)
         self.bias_1 = np.ones(numHidden) * 0.1
@@ -16,8 +20,18 @@ class Neural_Network:
         # Pass in the size of the intermediate vector
         self.w2 = self.init_Weights(numHidden, numOutput)
         self.bias_2 = np.ones(numOutput) * 0.1
+    
 
+    def createVector(self, start, stop, numCol, numRow):
+
+        returnVector = np.zeros( (numCol, numRow) )
         
+        for i in range(len( returnVector ) ):
+            for j in range(len( returnVector[0] ) ):
+                returnVector[i][j] = random.uniform(start, stop)
+        
+        return returnVector
+
     # This randomnly a single layer's of the NN's weights
     # Input: The length of the desired vector 
     # Output: The randomnly initalized weight vector
@@ -25,7 +39,23 @@ class Neural_Network:
         
         # Must make the weights smaller or else softmax returns infinite
         # returnVector = np.ones( length ) * 0.001
-        returnVector = np.random.rand( numColumns, numRows ) # * 0.1 
+
+        returnVector = self.createVector(-0.10, 0.10, numColumns, numRows)
+        
+        #print("")
+        #print(np.random.randn(numColumns, numRows) )
+        #print("")
+        
+        # returnVector = np.asarray(np.random.randn(numColumns, numRows), dtype=np.float32)
+        
+        # ( np.ones( (numColumns, numRows) ) ) + np.random.rand( numColumns, numRows ) 
+        #print("")
+        #print("The return vector is ")
+        #print(returnVector)
+        #print("")
+
+        # np.ones( (numColumns, numRows) ) * 0.05 
+        # np.random.rand( numColumns, numRows ) # * 0.1 
 
         return returnVector
         
@@ -61,16 +91,12 @@ class Neural_Network:
     # Output: The maximum index of the output vector
     def forwardProp(self, inputVector):
         
-        #print("The input is " + str(inputVector) )
-       
-
-        #print("")
-        
         layer_1 = self.relu( np.matmul( inputVector.copy(), self.w1.copy() ) )  # + self.bias_1 )   
         
+        #print("")
         #print("layer_1 is " + str(layer_1) )
         #print("")       
-
+    
         # Use the softmax function at the output layer
         outputVector = np.array( [ self.softmax( np.matmul( layer_1.copy(), self.w2.copy() ) ) ] ) # + self.bias_2 )
         
@@ -80,9 +106,9 @@ class Neural_Network:
         #print(  np.matmul( layer_1, self.w2.T ) + self.bias_2 )
         #print("")
 
-        print("")
-        print("The output vector is " + str(outputVector) )
-        print("")
+        #print("")
+        #print("The output vector is " + str(outputVector) )
+        #print("")
 
         # Return the max index of the output vector
         return np.argmax( outputVector )

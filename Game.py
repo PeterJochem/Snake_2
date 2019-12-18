@@ -99,15 +99,31 @@ class Game:
             
 
 
-    def distance_food(self, x, y):
-
+    def distance_food(self, x, y, priorX, priorY):
+        
+        # This computes the actual distance
         maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
-
+        
         # Check that the (x,y) pair is legal
         if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
             return -1
-        
+          
         return np.sqrt( ( (x - self.current_food[0])**2) + ( (y - self.current_food[1])**2) ) / maxLength
+
+
+        #maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
+        # Check that the (x,y) pair is legal
+        #if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
+        #    return -1
+        #deltaX = x - priorX
+        #deltaY = y - priorY
+        #if ( (deltaX == 1) and ( abs(x - self.current_food[0]) < abs(priorX - self.current_food[0])  )  ):
+        #    return 1.0
+        #elif ( (deltaY == 1) and (  abs(y - self.current_food[1]) < abs(priorY - self.current_food[1])  )  ):
+        #    return 1.0
+        #else:
+        #    return 0.0
+        
 
     
     def generate_4_Neighbors(self, x, y):
@@ -141,16 +157,18 @@ class Game:
         vectorIndex = 0
         for i in range( len(neighbors_list) ):
             
+            prior_x = self.snake.body_x[-1] 
+            prior_y =  self.snake.body_y[-1]
             x = neighbors_list[i][0] 
             y = neighbors_list[i][1]
-
-            returnVector[vectorIndex] = self.distance_food( x, y ) 
-            returnVector[vectorIndex + 1] = self.distance_wall( x, y )
-            returnVector[vectorIndex + 2] = (self.distance_body( x, y, True ) )[0]
-            returnVector[vectorIndex + 3] = (self.distance_body( x, y, True ) )[1]
+            returnVector[vectorIndex] = 100.0 * self.distance_food( x, y, prior_x, prior_y ) 
+            returnVector[vectorIndex + 1] = 100.0 * self.distance_wall( x, y )
+            returnVector[vectorIndex + 2] = 100.0 *  (self.distance_body( x, y, True ) )[0]
+            returnVector[vectorIndex + 3] = 10.0 *  (self.distance_body( x, y, True ) )[1]
 
             vectorIndex = vectorIndex + 4
-
+        
+        
         return returnVector
         
 
@@ -287,8 +305,8 @@ class Game:
         
 
         # Check if the food and the head collided
-        head_x = newState_x[ len(newState_x) - 1]
-        head_y = newState_y[  len(newState_y) - 1]
+        head_x = newState_x[ -1]
+        head_y = newState_y[ -1]
         if ( (self.current_food[0] == head_x ) and (self.current_food[1] == head_y )   ):
              
             print("The snake ate some food")
@@ -354,9 +372,9 @@ class Game:
         
         inputVector = self.compute_In_Vector(x, y)
               
-        print("The input vector is ")
-        print(inputVector)
-        print("")
+        #print("The input vector is ")
+        #print(inputVector)
+        #print("")
     
         move = self.neural_network.forwardProp(inputVector)
             
