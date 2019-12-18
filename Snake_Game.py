@@ -4,8 +4,6 @@ import numpy as np
 import graphics
 
 
-
-
 ############ Main ##################
 
 # Create game 

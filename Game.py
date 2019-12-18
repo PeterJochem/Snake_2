@@ -2,6 +2,7 @@
 
 import graphics
 import numpy as np
+from snake import Snake
 from graphics import *
 
 class Game: 
@@ -17,11 +18,13 @@ class Game:
 
         self.window = GraphWin("Snake", self.length_window, self.width_window)
         
+        self.snake = Snake("Peter", "Blue")
+
 
     # Draw the board to the screen
     def drawBoard(self):
          
-        self.window.setBackground("black") 
+        self.window.setBackground("white") 
         
         # draw everything once
         # Just set/re-set the colors to implement the gameplay
@@ -42,7 +45,7 @@ class Game:
             for j in range( self.width_grid ):
                 
                 current_row = float(self.length_window) / float(self.length_grid)
-                current_column = float(self.width_window) / float(self.width_grid) 
+                current_column = float(self.width_window) / float(self.width_grid ) 
                 
                 # Point_2 = Point_1
                 Point_1 = Point( current_row * i , current_column * j )  
@@ -60,11 +63,22 @@ class Game:
             for j in range( len(rectangles[i] ) ):
                 
                 rectangles[i][j].draw(self.window)
-                rectangles[i][j].setFill("White")
+                rectangles[i][j].setFill("black")
         
 
         # Draw lines over the original grid?
-          
+        
+        # Draw the snake's body
+        x = self.snake.body_x[0]
+        y = self.snake.body_y[0]
+        rectangles[y][x].setFill(self.snake.color)
+        
+        # Draw the name and the score
+        message = Text( Point(50, 50), "Score: 0" )
+        message.setSize(18)
+        message.setTextColor("white")
+        message.draw(self.window)
+       
+        # Make the food blink?? Kind of cool?
 
-            
-    
+
