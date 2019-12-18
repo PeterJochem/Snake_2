@@ -7,24 +7,25 @@ import numpy as np
 class Neural_Network:
 
 
-    def __init__(self):
+    def __init__(self, numInputs, numHidden, numOutput):
     
         # Pass in the size of the input
-        self.w1 = self.init_Weights(4)
-        self.bias_1 = np.ones(4) * 0.1
+        self.w1 = self.init_Weights(numInputs, numHidden)
+        self.bias_1 = np.ones(numHidden) * 0.1
 
         # Pass in the size of the intermediate vector
-        self.w2 = self.init_Weights(4)
-        self.bias_2 = np.ones(4) * 0.1
+        self.w2 = self.init_Weights(numHidden, numOutput)
+        self.bias_2 = np.ones(numOutput) * 0.1
 
         
     # This randomnly a single layer's of the NN's weights
     # Input: The length of the desired vector 
     # Output: The randomnly initalized weight vector
-    def init_Weights(self, length):
+    def init_Weights(self, numColumns, numRows):
         
-        returnVector = np.zeros( length )
-        returnVector = np.ones( length )
+        # Must make the weights smaller or else softmax returns infinite
+        # returnVector = np.ones( length ) * 0.001
+        returnVector = np.random.rand( numColumns, numRows ) # * 0.1 
 
         return returnVector
         
@@ -46,12 +47,12 @@ class Neural_Network:
         
         # Traverse the array once to compute the integral term
         integral = float( np.sum( np.exp( inVector ) ) )
-
+        
         for i in range(len(inVector) ):
 
            returnVector[i] = (np.e ** inVector[i] ) / integral   
-     
-        print( returnVector )
+             
+        # print( returnVector )
         return returnVector
 
 
@@ -60,16 +61,26 @@ class Neural_Network:
     # Output: The maximum index of the output vector
     def forwardProp(self, inputVector):
         
-        print("The input is " + str(inputVector) )
-        print("")
-        layer_1 = self.relu( np.matmul( inputVector, self.w1.T) + self.bias_1 )   
+        #print("The input is " + str(inputVector) )
+       
+
+        #print("")
         
-        print("layer_1 is " + str(layer_1) )
-        print("")
+        layer_1 = self.relu( np.matmul( inputVector.copy(), self.w1.copy() ) )  # + self.bias_1 )   
+        
+        #print("layer_1 is " + str(layer_1) )
+        #print("")       
 
         # Use the softmax function at the output layer
-        outputVector = self.softmax( np.matmul( layer_1, self.w2 ) + self.bias_2 )
+        outputVector = np.array( [ self.softmax( np.matmul( layer_1.copy(), self.w2.copy() ) ) ] ) # + self.bias_2 )
         
+        #print("w2 is ")
+        #print(self.w2)
+        #print("")
+        #print(  np.matmul( layer_1, self.w2.T ) + self.bias_2 )
+        #print("")
+
+        print("")
         print("The output vector is " + str(outputVector) )
         print("")
 
@@ -89,11 +100,9 @@ class Neural_Network:
 
 ####### Main for testing ###########
 
-myNN = Neural_Network()
-
-inputVector = np.array([1.0, 1.0, 1.0, 1.0])
-
-print( myNN.forwardProp( inputVector  ) )
+#myNN = Neural_Network(16, 5, 4)
+#inputVector = np.zeros(16)
+#print( myNN.forwardProp( inputVector  ) )
 
 
 

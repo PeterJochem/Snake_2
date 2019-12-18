@@ -16,3 +16,6 @@ class Snake:
         self.body_y = np.array( [5 ] )
     
 
+    def isBody(self, x, y):
+        return False
+

@@ -30,10 +30,14 @@ while ( True ):
         # Compute the next input vector
         # Forward prop the inputVector
         # Convert the NN's output to a direction
-        nextDirection = myGame.  
+        # nextDirection = myGame.  
         
-        myGame.nextState( moves[i] )
+        # myGame.nextState( moves[i] )
          
+        move = myGame.generate_NN_Move()
+
+        myGame.nextState( move )
+
 
 while(True):
     pass 

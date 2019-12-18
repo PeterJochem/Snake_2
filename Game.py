@@ -4,7 +4,7 @@ import numpy as np
 from snake import Snake
 from graphics import *
 from random import random
-import Neural_Network
+from Neural_Network import Neural_Network
 
 class Game: 
         
@@ -33,58 +33,65 @@ class Game:
         # A tuple of the current food's location
         self.current_food = self.placeFood()
         
-        self.neural_network = Neural_Network()
+        # FIX ME!!
+        self.neural_network = Neural_Network( 16, 5, 4  )
 
-
+    # Retrurn the normalized distance
     def distance_wall(self, x, y):
 
-        # Check that the (x, y) pair is legal
-        if ( (x < 0) or (y < 0) or (x >= self.width_window) or (y >= self.length_window) ):
-            # EXPLAIN THIS
-            np.sqrt( ( self.width_window**2) + ( self.length_window**2) )
+        maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )
 
-        return = np.sqrt( ( (x - self.width_window)**2) + ( (y - self.length_window)**2) )
+        # Check that the (x, y) pair is legal
+        if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
+            # EXPLAIN THIS
+            return 1.0
+
+        return np.sqrt( ( (x - self.width_grid)**2) + ( (y - self.length_grid)**2) ) / maxLength
          
     # Describe the inputs
     # FIX ME - add the diagonals!!!!!
     def distance_body(self, x, y, forward):
-
+        
+        maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )
         # Check that the (x, y) pair is legal    
-        if ( (x < 0) or (y < 0) or (x >= self.width_window) or (y >= self.length_window) ):
+        if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
             return -1
        
         # Traverse in this direction to see how far we are to any body part
         # Set this to the high vaue to avoid discontinuity in the statistic!
         # -1 is good, 0 is the worst, larger from there is better
-        linear_to_body_x = self.width_window
-        linear_to_body_y = self.length_window
+        linear_to_body_x_forward = np.random.rand(1)[0]    # self.width_grid / maxLength
+        linear_to_body_y_forward = np.random.rand(1)[0]    # self.length_grid / maxLength
+        linear_to_body_x_backwards = np.random.rand(1)[0]   # self.width_grid / maxLength
+        linear_to_body_y_backwards = np.random.rand(1)[0]  # self.length_grid / maxLength
+
 
         # Traverse the x-dimension forwards
-        for i in range( self.width_window - x ):
+        for i in range( self.width_grid - x ):
             
             if ( self.snake.isBody(x + i, y)  ):
-                linear_to_body_x_forward = i 
+                linear_to_body_x_forward = float(i) / maxLength
                 break  
         
         # Traverse the x-dimension backwards
         for i in range( x ):
 
             if ( self.snake.isBody(x - i, y)  ):
-                linear_to_body_x_backwards = i
+                linear_to_body_x_backwards = float(i) / maxLength
                 break
         
         # Traverse the y-dimension forwards
-        for i in range( self.length_window - y ):
+        for i in range( self.length_grid - y ):
 
             if ( self.snake.isBody(x, y + i)  ):
-                linear_to_body_y_forward = i                    
+                linear_to_body_y_forward = float(i) / maxLength                    
                 break
 
         # Traverse the y-dimension backwards
         for i in range( y ):
 
             if ( self.snake.isBody(x, y - i)  ):
-                linear_to_body_y_backwards = i
+                linear_to_body_y_backwards = float(i) / maxLength
                 break
         
         # Return the tuple
@@ -92,25 +99,32 @@ class Game:
             
 
 
-    def distance_food(self, x, y)
+    def distance_food(self, x, y):
+
+        maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
 
         # Check that the (x,y) pair is legal
-        if ( (x < 0) or (y < 0) or (x >= self.width_window) or (y >= self.length_window) ):
+        if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
             return -1
         
-        return np.sqrt( ( (x - self.current_food[0])**2) + ( (y - self.current_food[1])**2) )
+        return np.sqrt( ( (x - self.current_food[0])**2) + ( (y - self.current_food[1])**2) ) / maxLength
 
+    
+    def generate_4_Neighbors(self, x, y):
 
+        return [ [x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1] ]
+        
     
     # This method takes the game state and computes the in vector
     # that will go to the neural network
     # Input: 
     # Output: N x ? np.array
-    def compute_In_Vector()
+    def compute_In_Vector(self, x, y):
         
         # FIX ME!!
         # Let's start with just the 4 neighbor
         numNeighbors = 4
+        numStats = 4
         length = numNeighbors * numStats
         returnVector = np.zeros(length)
 
@@ -122,14 +136,20 @@ class Game:
         
         # Create a list of tuples of each of the x and y locations
         # The statistic methods will check if the locations are legal or not 
-        neighbors_list = generate_4_Neighbors() 
-
-
+        neighbors_list = self.generate_4_Neighbors(x, y) 
+ 
+        vectorIndex = 0
         for i in range( len(neighbors_list) ):
             
-            returnVector[i] = distance_food() 
-            returnVector[i + 1] = distance_wall()
-            returnVector[i + 2] = distance_body()
+            x = neighbors_list[i][0] 
+            y = neighbors_list[i][1]
+
+            returnVector[vectorIndex] = self.distance_food( x, y ) 
+            returnVector[vectorIndex + 1] = self.distance_wall( x, y )
+            returnVector[vectorIndex + 2] = (self.distance_body( x, y, True ) )[0]
+            returnVector[vectorIndex + 3] = (self.distance_body( x, y, True ) )[1]
+
+            vectorIndex = vectorIndex + 4
 
         return returnVector
         
@@ -318,7 +338,7 @@ class Game:
         # Change the fill on the old states
         # Change the fill on the new states
         # Traverse the list of the rectangles to change their fill colors
-        for i in  range( len( newState_x  ) ):
+        for i in range( len( newState_x  ) ):
              
             x = newState_x[i]
             y = newState_y[i]
@@ -326,5 +346,33 @@ class Game:
             # self.rectangles[y][x].draw(self.window)
             self.rectangles[y][x].setFill("white")
 
+    # Let the neural net generate a move
+    def generate_NN_Move(self):
+
+        x = self.snake.body_x[ -1 ]
+        y = self.snake.body_y[ -1 ]
+        
+        inputVector = self.compute_In_Vector(x, y)
+              
+        print("The input vector is ")
+        print(inputVector)
+        print("")
+    
+        move = self.neural_network.forwardProp(inputVector)
+            
+        if ( move == 0 ):
+            move = "left"
+
+        elif ( move == 1 ):
+            move = "right"
+
+        elif ( move == 2):
+            move = "down"
+
+        elif ( move == 3 ):
+            move = "up"
+
+        return move
+        
 
 
