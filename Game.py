@@ -3,10 +3,15 @@ import graphics
 import numpy as np
 from snake import Snake
 from graphics import *
+from random import random
 
 class Game: 
         
     def __init__(self, length_grid, width_grid, length_window, width_window):
+        
+        self.score = 0
+        
+        self.message = None
 
         self.length_grid = length_grid
         self.width_grid = width_grid
@@ -19,8 +24,49 @@ class Game:
         
         self.snake = Snake("Peter", "Blue")
         
-        self.board = np.array([])
+        # This also sets the methods board object
+        self.drawBoard()
+        
+        self.id = 0
 
+        # A tuple of the current food's location
+        self.current_food = self.placeFood()
+        
+
+    def placeFood(self):
+            
+        # Place the food randomnly
+        # Check that the spot is not occupied by the current snake
+        
+        while (True):
+            new_x = int( random() * len(self.board[0] ) ) 
+            new_y = int( random() * len(self.board ) )
+        
+            # Check that 
+            for i in range(len( self.snake.body_x ) ):
+                
+                if ( (new_x == self.snake.body_x[i] ) and (new_y == self.snake.body_y[i] )  ):
+                    continue
+            
+            if( self.id == 0):
+                new_x = 5
+                new_y = 7 
+                self.id = 1
+                return [new_x, new_y]
+            elif(self.id == 1):
+                new_x = 5
+                new_y = 9    
+                self.id = 2
+                return [new_x, new_y]
+            elif ( self.id == 2 ):
+                new_x = 5
+                new_y = 7
+                self.id = 3
+                return [new_x, new_y]
+            else:
+                return [new_x, new_y]
+
+    
     # Draw the board to the screen
     def drawBoard(self):
          
@@ -31,7 +77,7 @@ class Game:
         # Put lines between each cell for a cleaner display
         
         # Store the lists of lists of graphics objects that is the grid
-        
+            
         self.rectangles = []
         
         # Store the list of points needed to draw the board
@@ -48,8 +94,8 @@ class Game:
                 current_row = float(self.length_window) / float(self.length_grid)
                 current_column = float(self.width_window) / float(self.width_grid ) 
                 
-                Point_1 = Point( current_row * i , current_column * j )  
-                Point_2 = Point( current_row * (i + 1) , current_column * (j + 1) )
+                Point_1 = Point( current_row * j , current_column * i )  
+                Point_2 = Point( current_row * (j + 1) , current_column * (i + 1) )
                 
                 current_row_rectangles.append( Rectangle(Point_1, Point_2 ) )
 
@@ -66,6 +112,8 @@ class Game:
                 self.rectangles[i][j].setFill("black")
         
 
+        self.board = self.rectangles
+
         # Draw lines over the original grid?
         
         # Draw the snake's body
@@ -74,16 +122,25 @@ class Game:
         self.rectangles[y][x].setFill(self.snake.color)
         
         # Draw the name and the score
-        message = Text( Point(50, 50), "Score: 0" )
-        message.setSize(18)
-        message.setTextColor("white")
-        message.draw(self.window)
+        self.message = Text( Point(50, 50), "Score: " + str(self.score) )
+        self.message.setSize(18)
+        self.message.setTextColor("white")
+        self.message.draw(self.window)
        
+        # Draw the food
+        try:
+            self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
+        except:
+            pass
+
         # Make the food blink?? Kind of cool?
     
     # This moves the game from one state to the next
     # Input is either "left", "right", "up", "down"
     def nextState(self, command):
+        
+        # Re-draw the food
+        self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
 
         # Update the internal data structures 
         newState_x = self.snake.body_x.copy() 
@@ -106,7 +163,38 @@ class Game:
             newState_x = np.append( newState_x,  newState_x[ len(newState_x) - 1]  )
             newState_y = np.append( newState_y,  newState_y[ len(newState_y) - 1] - 1 )
         
-        
+
+        # Check if the food and the head collided
+        head_x = newState_x[ len(newState_x) - 1]
+        head_y = newState_y[  len(newState_y) - 1]
+        if ( (self.current_food[0] == head_x ) and (self.current_food[1] == head_y )   ):
+             
+            print("The snake ate some food")
+            
+            # Draw the name and the score
+            self.score = self.score + 1.0
+            self.message.undraw()
+            self.message = Text( Point(60, 30), "Score: " + str(self.score) )
+            self.message.setSize(18)
+            self.message.setTextColor("white")
+            self.message.draw(self.window)
+            
+
+            # Add an item to the snake's body 
+            self.snake.body_x = np.append(self.snake.body_x, self.current_food[0]  )  
+            self.snake.body_y = np.append(self.snake.body_y, self.current_food[1]  )
+            
+            # Draw the new square
+            x = self.snake.body_x[ len(self.snake.body_x) - 1]
+            y = self.snake.body_y[ len(self.snake.body_y) - 1]
+            self.rectangles[y][x].setFill("white") 
+
+            # Place new food
+            self.current_food = self.placeFood()
+
+            return
+
+
         # This is the caboose of the snake and will be deleted
         # We delete by changing the fill to the background color
         delete_x = newState_x[0]

@@ -11,9 +11,9 @@ import time
 myGame = Game(20, 20, 600, 500)
 myGame.drawBoard()
 
-myGame.drawBoard()
+moves = ["left", "left", "left", "left", "up", "up", "up", "up", "right", "right", "right", "right",  "down", "down", "down", "down" ]
 
-moves = ["left", "left", "up", "up", "right", "right", "down", "down"]
+# myGame.current_food = myGame.placeFood()
 
 i = 0
 while ( True ):
@@ -25,8 +25,8 @@ while ( True ):
         # myGame.rectangles[0][0].setFill("purple")
         # myGame.rectangles[0].setFill()
             
-        time.sleep(1)
-        myGame.nextState(moves[i] )
+        time.sleep(0.5)
+        myGame.nextState( moves[i] )
          
 
 while(True):
