@@ -1,5 +1,6 @@
 # This file implements the neural network
 
+import numpy as np
 
 
 
@@ -8,47 +9,69 @@ class Neural_Network:
 
     def __init__(self):
     
-        self.inputWeights = np.Matrix( [ ] ).T
-        bias_1 = 0.1
+        # Pass in the size of the input
+        self.w1 = self.init_Weights(4)
+        self.bias_1 = np.ones(4) * 0.1
 
-        self.hiddenWeights = np.Matrix( [] ).T
-        bias_2 = 0.1
+        # Pass in the size of the intermediate vector
+        self.w2 = self.init_Weights(4)
+        self.bias_2 = np.ones(4) * 0.1
 
-        self.outputUnits = np.Matrix( [] ).T
-        bias_3 = 0.1
-
-
-    # This randomnly initializes the NN's 
-    # given weights 
-    def initialize_Weights(self):
         
-        pass 
+    # This randomnly a single layer's of the NN's weights
+    # Input: The length of the desired vector 
+    # Output: The randomnly initalized weight vector
+    def init_Weights(self, length):
         
-    
+        returnVector = np.zeros( length )
+        returnVector = np.ones( length )
+
+        return returnVector
+        
+         
     # This function implements the rectified linear unit
-    def relu( myInput ):
-
-        return max(0.0, myInput) 
+    def relu( self, myInput ):
+        
+        for i in range( len(myInput) ):
+            myInput[i] = max(0.0, myInput[i] )
+    
+        return myInput
     
     # This function implements the softmax function
-    def softmax(self, myInput):
+    # Input is a 1 x N vector where N is the number of categorical output variables 
+    # Return is a 1 x N vector of the softmax for each of the N entries 
+    def softmax(self, inVector):
         
+        returnVector = np.zeros(len(inVector) )
         
+        # Traverse the array once to compute the integral term
+        integral = float( np.sum( np.exp( inVector ) ) )
+
+        for i in range(len(inVector) ):
+
+           returnVector[i] = (np.e ** inVector[i]  ) / integral   
+    
+        
+        print( returnVector )
+        return returnVector
 
 
     # This method takes an input vector
-    # Input: 
-    # Output: 
-    def forwardProp(inputVector):
+    # Input: an input vector to forward propogate 
+    # Output: The maximum index of the output vector
+    def forwardProp(self, inputVector):
     
-        # input vector needs to be a matrix to use the "*"
-        # If not, use np.matmul(x, y)
-        layer_1 = self.relu( inputVector * self.inputWeights ) + bias_1 )   
+        # print("")
+        # print( np.matmul( inputVector, self.w1.T) + self.bias_1   )
+        # print("")
+        layer_1 = self.relu( np.matmul( inputVector, self.w1.T) + self.bias_1 )   
         
-        layer_2 = self.softmax( layer_1 * self.hiddenWeights + bias_2 )
 
-        # Use the softmax function at the output layer 
-         
+        # Use the softmax function at the output layer
+        outputVector = self.softmax( np.matmul( layer_1, self.w2) + self.bias_2 )
+        
+        # Return the max index of the output vector
+        return np.argmax( outputVector )
 
 
 
@@ -60,4 +83,16 @@ class Neural_Network:
          
         # Return a new, child neural network
         pass 
+
+
+####### Main for testing ###########
+
+myNN = Neural_Network()
+
+inputVector = np.array([0.0, 0.0, 0.0, 0.0])
+
+print( myNN.forwardProp( inputVector  ) )
+
+
+
 
