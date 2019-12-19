@@ -8,10 +8,12 @@ from Neural_Network import Neural_Network
 
 class Game: 
         
-    def __init__(self, length_grid, width_grid, length_window, width_window):
+    def __init__(self, length_grid, width_grid, length_window, width_window, display):
         
         self.score = 0
         
+        self.isOver = False
+
         self.message = None
 
         self.length_grid = length_grid
@@ -20,9 +22,12 @@ class Game:
     
         self.length_window = length_window
         self.width_window = width_window
-
-        self.window = GraphWin("Snake", self.length_window, self.width_window)
         
+        if ( display == True ):
+            self.window = GraphWin("Snake", self.length_window, self.width_window)
+        else:
+            self.window = None
+
         self.snake = Snake("Peter", "Blue")
         
         # This also sets the methods board object
@@ -34,7 +39,7 @@ class Game:
         self.current_food = self.placeFood()
         
         # FIX ME!!
-        self.neural_network = Neural_Network( 16, 5, 4  )
+        self.neural_network = Neural_Network( 16, 16, 4  )
 
     # Retrurn the normalized distance
     def distance_wall(self, x, y, priorX, priorY):
@@ -123,33 +128,37 @@ class Game:
     def distance_food(self, x, y, priorX, priorY):
         
         # This computes the actual distance
-        # maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )  
+        #maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )  
         # Check that the (x,y) pair is legal
         #if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
         #    return -1
         #return np.sqrt( ( (x - self.current_food[0])**2) + ( (y - self.current_food[1])**2) ) / maxLength
 
 
-        maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
+        # maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
+        maxLength = self.width_grid
         # Check that the (x,y) pair is legal
         if ( (x < 0) or (y < 0) or (x >= self.length_grid) or (y >= self.width_grid) ):
             return -1
-
+        
         deltaX = x - priorX
         deltaY = y - priorY
+       
         if ( (deltaX == 1) and ( abs(x - self.current_food[0]) < abs(priorX - self.current_food[0])  )  ):
-            return 1.0
+            return abs(x - self.current_food[0])
         elif ( (deltaY == 1) and (  abs(y - self.current_food[1]) < abs(priorY - self.current_food[1])  )  ):
-            return 1.0
+            return  abs(y - self.current_food[1])
         else:
-            return -1.0
+            return 0.0
         
 
     
     def generate_4_Neighbors(self, x, y):
 
         return [ [x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1] ]
+
         
+
     
     # This method takes the game state and computes the in vector
     # that will go to the neural network
@@ -162,7 +171,7 @@ class Game:
         numNeighbors = 4
         numStats = 4
         length = numNeighbors * numStats
-        returnVector = np.zeros(length)
+        returnVector = np.zeros( (length, 1) )
 
         # Statistics
         # One-dimensional Distance to wall in that direction
@@ -182,16 +191,20 @@ class Game:
             prior_y =  self.snake.body_y[-1]
             x = neighbors_list[i][0] 
             y = neighbors_list[i][1]
-
+            
+            # Compute distance to it's tail? 
             # Compute the statisitcs for the given neighbor
-            returnVector[vectorIndex] = 1.0 * self.distance_food( x, y, prior_x, prior_y ) 
-            returnVector[vectorIndex + 1] = 10.0 * self.distance_wall( x, y, prior_x, prior_y )
-            returnVector[vectorIndex + 2] = 50.0 *  (self.distance_body( x, y, forward[i] ) )[0]
-            returnVector[vectorIndex + 3] = 100.0 *  (self.distance_body( x, y, forward[i] ) )[1]
+            returnVector[vectorIndex] = 10.0 * self.distance_food( x, y, prior_x, prior_y ) 
+            returnVector[vectorIndex + 1] =  10.0 * self.distance_wall( x, y, prior_x, prior_y )
+            returnVector[vectorIndex + 2] =  10.0 *  (self.distance_body( x, y, forward[i] ) )[0]
+            returnVector[vectorIndex + 3] =  10.0 *  (self.distance_body( x, y, forward[i] ) )[1]
 
             vectorIndex = vectorIndex + 4
         
-        
+        #print("")
+        #print("The inVector is " )
+        #print(returnVector)
+        #print("")
         return returnVector
         
 
@@ -231,8 +244,9 @@ class Game:
     
     # Draw the board to the screen
     def drawBoard(self):
-         
-        self.window.setBackground("white") 
+        
+        if (self.window != None ):
+            self.window.setBackground("white") 
         
         # draw everything once
         # Just set/re-set the colors to implement the gameplay
@@ -266,11 +280,12 @@ class Game:
 
         
         # Traverse the list of the rectangles to change their fill colors
-        for i in  range( len( self.rectangles  ) ):
-            for j in range( len( self.rectangles[i] ) ):
-                
-                self.rectangles[i][j].draw(self.window)
-                self.rectangles[i][j].setFill("black")
+        if ( self.window != None ):
+            for i in  range( len( self.rectangles  ) ):
+                for j in range( len( self.rectangles[i] ) ):
+                    
+                    self.rectangles[i][j].draw(self.window)
+                    self.rectangles[i][j].setFill("black")
         
 
         self.board = self.rectangles
@@ -280,19 +295,18 @@ class Game:
         # Draw the snake's body
         x = self.snake.body_x[0]
         y = self.snake.body_y[0]
-        self.rectangles[y][x].setFill(self.snake.color)
-        
-        # Draw the name and the score
-        self.message = Text( Point(50, 50), "Score: " + str(self.score) )
-        self.message.setSize(18)
-        self.message.setTextColor("white")
-        self.message.draw(self.window)
-       
-        # Draw the food
-        try:
-            self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
-        except:
-            pass
+        if ( self.window != None ):
+            self.rectangles[y][x].setFill(self.snake.color)
+            # Draw the name and the score
+            self.message = Text( Point(50, 50), "Score: " + str(self.score) )
+            self.message.setSize(18)
+            self.message.setTextColor("white")
+            self.message.draw(self.window)
+            # Draw the food
+            try:
+                self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
+            except:
+                pass
 
         # Make the food blink?? Kind of cool?
     
@@ -301,7 +315,8 @@ class Game:
     def nextState(self, command):
         
         # Re-draw the food
-        self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
+        if ( self.window != None ):
+            self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
 
         # Update the internal data structures 
         newState_x = self.snake.body_x.copy() 
@@ -330,25 +345,29 @@ class Game:
         head_y = newState_y[-1]
         if ( (self.current_food[0] == head_x ) and (self.current_food[1] == head_y )   ):
              
-            print("The snake ate some food")
-            
-            # Draw the name and the score
             self.score = self.score + 1.0
-            self.message.undraw()
-            self.message = Text( Point(60, 30), "Score: " + str(self.score) )
-            self.message.setSize(18)
-            self.message.setTextColor("white")
-            self.message.draw(self.window)
+
+            # Draw the name and the score
+            if ( self.window != None ):
+                self.message.undraw()
+                self.message = Text( Point(60, 30), "Score: " + str(self.score) )
+                self.message.setSize(18)
+                self.message.setTextColor("white")
+                self.message.draw(self.window)
             
 
             # Add an item to the snake's body 
+            # FIX ME - am I appending in the wrong order?
+            # The head is at the end of the list
             self.snake.body_x = np.append(self.snake.body_x, self.current_food[0]  )  
             self.snake.body_y = np.append(self.snake.body_y, self.current_food[1]  )
-            
+             
             # Draw the new square
             x = self.snake.body_x[-1]
             y = self.snake.body_y[-1]
-            self.rectangles[y][x].setFill("white") 
+            
+            if ( self.window != None ):
+                self.rectangles[y][x].setFill("white") 
 
             # Place new food
             self.current_food = self.placeFood()
@@ -360,7 +379,8 @@ class Game:
         # We delete by changing the fill to the background color
         delete_x = newState_x[0]
         delete_y = newState_y[0]
-        self.rectangles[delete_y][delete_x].setFill("black")
+        if ( self.window != None ):
+            self.rectangles[delete_y][delete_x].setFill("black")
 
         newState_x = np.delete(newState_x, 0)
         newState_y = np.delete(newState_y, 0)
@@ -374,13 +394,14 @@ class Game:
         # Change the fill on the old states
         # Change the fill on the new states
         # Traverse the list of the rectangles to change their fill colors
-        for i in range( len( newState_x  ) ):
+        if ( self.window != None ):
+            for i in range( len( newState_x  ) ):
              
-            x = newState_x[i]
-            y = newState_y[i]
+                x = newState_x[i]
+                y = newState_y[i]
 
-            # self.rectangles[y][x].draw(self.window)
-            self.rectangles[y][x].setFill("white")
+                # self.rectangles[y][x].draw(self.window)
+                self.rectangles[y][x].setFill("white")
 
     # Let the neural net generate a move
     def generate_NN_Move(self):
@@ -397,7 +418,8 @@ class Game:
             # Check that the move is legal
             if ( self.snake.isLegal( move, x, y, self.length_grid, self.width_grid ) == False ):
                 # print("Move rejected. Replanning")
-                outputVector[0][move] = -1
+                # outputVector[0][move] = -1
+                self.isOver = True
             else:
                 break
         
@@ -405,8 +427,9 @@ class Game:
             print("NO MOVE FOUND")
             print("(x, y) is ")
             print( str(x) + str(", ") + str(y) )
-            while(True):
-                pass
+            self.isOver = True
+            #while(True):
+            #    pass
 
         if ( move == 0 ):
             move = "left"

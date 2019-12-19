@@ -38,24 +38,7 @@ class Neural_Network:
     def init_Weights(self, numColumns, numRows):
         
         # Must make the weights smaller or else softmax returns infinite
-        # returnVector = np.ones( length ) * 0.001
-
-        returnVector = self.createVector(-0.15, 0.15, numColumns, numRows)
-        
-        #print("")
-        #print(np.random.randn(numColumns, numRows) )
-        #print("")
-        
-        # returnVector = np.asarray(np.random.randn(numColumns, numRows), dtype=np.float32)
-        
-        # ( np.ones( (numColumns, numRows) ) ) + np.random.rand( numColumns, numRows ) 
-        #print("")
-        #print("The return vector is ")
-        #print(returnVector)
-        #print("")
-
-        # np.ones( (numColumns, numRows) ) * 0.05 
-        # np.random.rand( numColumns, numRows ) # * 0.1 
+        returnVector = self.createVector(1.0, 2.0, numColumns, numRows)
 
         return returnVector
         
@@ -64,7 +47,7 @@ class Neural_Network:
     def relu( self, myInput ):
         
         for i in range( len(myInput) ):
-            myInput[i] = max(0.0, myInput[i] )
+            myInput[i] = max(0.0, myInput[0][i] )
     
         return myInput
     
@@ -81,8 +64,8 @@ class Neural_Network:
         for i in range(len(inVector) ):
 
            returnVector[i] = (np.e ** inVector[i] ) / integral   
-             
-        print( returnVector )
+        
+        # print( returnVector )
         return returnVector
 
 
@@ -91,14 +74,18 @@ class Neural_Network:
     # Output: The maximum index of the output vector
     def forwardProp(self, inputVector):
         
-        layer_1 = self.relu( np.matmul( inputVector.copy(), self.w1.copy() ) )  # + self.bias_1 )   
-        
-        # Use the softmax function at the output layer
-        outputVector = np.array( [ self.softmax( np.matmul( layer_1.copy(), self.w2.copy() ) ) ] ) # + self.bias_2 )
+        #print("")   
+        #print( np.matmul( inputVector.copy().T, self.w1.copy() ) )
+        # print("")   
+
+        layer_1 = self.relu( np.matmul( inputVector.copy().T, self.w1.copy() ) )  # + self.bias_1 )   
             
+        # Use the softmax function at the output layer
+        #outputVector = # np.array( [ self.softmax( (np.matmul( layer_1.copy(), self.w2.copy() ) )[0] ) ] ) # + self.bias_2 )
         
-        # Return the max index of the output vector
-        #print("")
+        outputVector = np.array( [ np.matmul( layer_1.copy(), self.w2.copy() )[0]  ] ) 
+
+        #print("") 
         #print(outputVector)
         #print("")
         return outputVector
