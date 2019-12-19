@@ -40,7 +40,7 @@ class Neural_Network:
         # Must make the weights smaller or else softmax returns infinite
         # returnVector = np.ones( length ) * 0.001
 
-        returnVector = self.createVector(-0.10, 0.10, numColumns, numRows)
+        returnVector = self.createVector(-0.15, 0.15, numColumns, numRows)
         
         #print("")
         #print(np.random.randn(numColumns, numRows) )
@@ -82,7 +82,7 @@ class Neural_Network:
 
            returnVector[i] = (np.e ** inVector[i] ) / integral   
              
-        # print( returnVector )
+        print( returnVector )
         return returnVector
 
 
@@ -93,25 +93,15 @@ class Neural_Network:
         
         layer_1 = self.relu( np.matmul( inputVector.copy(), self.w1.copy() ) )  # + self.bias_1 )   
         
-        #print("")
-        #print("layer_1 is " + str(layer_1) )
-        #print("")       
-    
         # Use the softmax function at the output layer
         outputVector = np.array( [ self.softmax( np.matmul( layer_1.copy(), self.w2.copy() ) ) ] ) # + self.bias_2 )
+            
         
-        #print("w2 is ")
-        #print(self.w2)
-        #print("")
-        #print(  np.matmul( layer_1, self.w2.T ) + self.bias_2 )
-        #print("")
-
-        #print("")
-        #print("The output vector is " + str(outputVector) )
-        #print("")
-
         # Return the max index of the output vector
-        return np.argmax( outputVector )
+        #print("")
+        #print(outputVector)
+        #print("")
+        return outputVector
 
 
     # This method takes itself and a mate's weights

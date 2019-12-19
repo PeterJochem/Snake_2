@@ -25,7 +25,7 @@ while ( True ):
         # myGame.rectangles[0][0].setFill("purple")
         # myGame.rectangles[0].setFill()
             
-        time.sleep(0.5)
+        time.sleep(0.05)
         
         # Compute the next input vector
         # Forward prop the inputVector
@@ -35,7 +35,7 @@ while ( True ):
         # myGame.nextState( moves[i] )
          
         move = myGame.generate_NN_Move()
-
+        
         myGame.nextState( move )
 
 

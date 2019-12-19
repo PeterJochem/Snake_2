@@ -37,16 +37,34 @@ class Game:
         self.neural_network = Neural_Network( 16, 5, 4  )
 
     # Retrurn the normalized distance
-    def distance_wall(self, x, y):
+    def distance_wall(self, x, y, priorX, priorY):
 
-        maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )
+        maxLength = -1.0
+
+        if ( (x - priorX == 1) ):
+            maxLength = float(self.width_grid)
+        elif( (x - priorX == -1) ):
+            maxLength = float(-1 * self.width_grid)
+        elif( y - priorY == 1  ):
+             maxLength = float(-1 * self.length_grid)
+        else:
+            maxLength = float(-1 * self.length_grid) 
 
         # Check that the (x, y) pair is legal
-        if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
+        if ( (x < 0) or (y < 0) ):
+             return 0.0   
+        elif ( (x >= self.width_grid) or (y >= self.length_grid) ):
             # EXPLAIN THIS
-            return 1.0
+            return maxLength
+        
+        # Normal cases 
+        if ( (x - priorX != 0) ):
+            # Moving to the right/left
+            return (maxLength - x) / maxLength
 
-        return np.sqrt( ( (x - self.width_grid)**2) + ( (y - self.length_grid)**2) ) / maxLength
+        else:
+            return (maxLength - y) / maxLength 
+
          
     # Describe the inputs
     # FIX ME - add the diagonals!!!!!
@@ -54,75 +72,77 @@ class Game:
         
         maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )
         # Check that the (x, y) pair is legal    
-        if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
-            return -1
+        if ( (x < 0) or (y < 0) ):
+            return [0.0, 0.0]    
+        
+        elif ( (x >= self.width_grid) or (y >= self.length_grid) ):
+            return [maxLength, maxLength]
        
         # Traverse in this direction to see how far we are to any body part
-        # Set this to the high vaue to avoid discontinuity in the statistic!
+        # Set this to the high value to avoid discontinuity in the statistic!
         # -1 is good, 0 is the worst, larger from there is better
-        linear_to_body_x_forward = np.random.rand(1)[0]    # self.width_grid / maxLength
-        linear_to_body_y_forward = np.random.rand(1)[0]    # self.length_grid / maxLength
-        linear_to_body_x_backwards = np.random.rand(1)[0]   # self.width_grid / maxLength
-        linear_to_body_y_backwards = np.random.rand(1)[0]  # self.length_grid / maxLength
+        linear_to_body_x_forward = maxLength
+        linear_to_body_y_forward = maxLength
+        linear_to_body_x_backwards = maxLength
+        linear_to_body_y_backwards = maxLength
 
 
         # Traverse the x-dimension forwards
-        for i in range( self.width_grid - x ):
+        for i in range( self.length_grid - x ):
             
-            if ( self.snake.isBody(x + i, y)  ):
+            if ( self.snake.isBody(x + i, y) == False  ):
                 linear_to_body_x_forward = float(i) / maxLength
                 break  
         
         # Traverse the x-dimension backwards
         for i in range( x ):
 
-            if ( self.snake.isBody(x - i, y)  ):
+            if ( self.snake.isBody(x - i, y) == False ):
                 linear_to_body_x_backwards = float(i) / maxLength
                 break
         
         # Traverse the y-dimension forwards
-        for i in range( self.length_grid - y ):
+        for i in range( self.width_grid - y ):
 
-            if ( self.snake.isBody(x, y + i)  ):
+            if ( self.snake.isBody(x, y + i) == False ):
                 linear_to_body_y_forward = float(i) / maxLength                    
                 break
 
         # Traverse the y-dimension backwards
         for i in range( y ):
 
-            if ( self.snake.isBody(x, y - i)  ):
+            if ( self.snake.isBody(x, y - i) == False ):
                 linear_to_body_y_backwards = float(i) / maxLength
                 break
         
         # Return the tuple
         return [linear_to_body_x_forward, linear_to_body_y_forward] 
-            
+
 
 
     def distance_food(self, x, y, priorX, priorY):
         
         # This computes the actual distance
-        maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
-        
-        # Check that the (x,y) pair is legal
-        if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
-            return -1
-          
-        return np.sqrt( ( (x - self.current_food[0])**2) + ( (y - self.current_food[1])**2) ) / maxLength
-
-
-        #maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
+        # maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )  
         # Check that the (x,y) pair is legal
         #if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
         #    return -1
-        #deltaX = x - priorX
-        #deltaY = y - priorY
-        #if ( (deltaX == 1) and ( abs(x - self.current_food[0]) < abs(priorX - self.current_food[0])  )  ):
-        #    return 1.0
-        #elif ( (deltaY == 1) and (  abs(y - self.current_food[1]) < abs(priorY - self.current_food[1])  )  ):
-        #    return 1.0
-        #else:
-        #    return 0.0
+        #return np.sqrt( ( (x - self.current_food[0])**2) + ( (y - self.current_food[1])**2) ) / maxLength
+
+
+        maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
+        # Check that the (x,y) pair is legal
+        if ( (x < 0) or (y < 0) or (x >= self.length_grid) or (y >= self.width_grid) ):
+            return -1
+
+        deltaX = x - priorX
+        deltaY = y - priorY
+        if ( (deltaX == 1) and ( abs(x - self.current_food[0]) < abs(priorX - self.current_food[0])  )  ):
+            return 1.0
+        elif ( (deltaY == 1) and (  abs(y - self.current_food[1]) < abs(priorY - self.current_food[1])  )  ):
+            return 1.0
+        else:
+            return -1.0
         
 
     
@@ -155,23 +175,25 @@ class Game:
         neighbors_list = self.generate_4_Neighbors(x, y) 
  
         vectorIndex = 0
+        forward = [True, False, True, False]
         for i in range( len(neighbors_list) ):
             
             prior_x = self.snake.body_x[-1] 
             prior_y =  self.snake.body_y[-1]
             x = neighbors_list[i][0] 
             y = neighbors_list[i][1]
-            returnVector[vectorIndex] = 100.0 * self.distance_food( x, y, prior_x, prior_y ) 
-            returnVector[vectorIndex + 1] = 100.0 * self.distance_wall( x, y )
-            returnVector[vectorIndex + 2] = 100.0 *  (self.distance_body( x, y, True ) )[0]
-            returnVector[vectorIndex + 3] = 10.0 *  (self.distance_body( x, y, True ) )[1]
+
+            # Compute the statisitcs for the given neighbor
+            returnVector[vectorIndex] = 1.0 * self.distance_food( x, y, prior_x, prior_y ) 
+            returnVector[vectorIndex + 1] = 10.0 * self.distance_wall( x, y, prior_x, prior_y )
+            returnVector[vectorIndex + 2] = 50.0 *  (self.distance_body( x, y, forward[i] ) )[0]
+            returnVector[vectorIndex + 3] = 100.0 *  (self.distance_body( x, y, forward[i] ) )[1]
 
             vectorIndex = vectorIndex + 4
         
         
         return returnVector
         
-
 
     def placeFood(self):
             
@@ -223,7 +245,6 @@ class Game:
         # Store the list of points needed to draw the board
         points = [] 
         
-
         for i in range( self.length_grid ):
             
             current_row_rectangles = []
@@ -288,25 +309,25 @@ class Game:
         
 
         if ( command == "left" ):
-            newState_x = np.append( newState_x,  newState_x[ len(newState_x) - 1] - 1 )
-            newState_y = np.append( newState_y,  newState_y[ len(newState_y) - 1]   )
+            newState_x = np.append( newState_x,  newState_x[ -1] - 1 )
+            newState_y = np.append( newState_y,  newState_y[ -1]   )
         
         elif ( command == "right" ):
-            newState_x = np.append( newState_x,  newState_x[ len(newState_x) - 1] + 1 )
-            newState_y = np.append( newState_y,  newState_y[ len(newState_y) - 1]   )    
+            newState_x = np.append( newState_x,  newState_x[ -1] + 1 )
+            newState_y = np.append( newState_y,  newState_y[ -1]   )    
         
         elif ( command == "up" ):
-            newState_x = np.append( newState_x,  newState_x[ len(newState_x) - 1]    )
-            newState_y = np.append( newState_y,  newState_y[ len(newState_y) - 1] + 1)
+            newState_x = np.append( newState_x,  newState_x[ -1]    )
+            newState_y = np.append( newState_y,  newState_y[ -1] + 1)
 
         elif ( command == "down" ):
-            newState_x = np.append( newState_x,  newState_x[ len(newState_x) - 1]  )
-            newState_y = np.append( newState_y,  newState_y[ len(newState_y) - 1] - 1 )
+            newState_x = np.append( newState_x,  newState_x[-1]  )
+            newState_y = np.append( newState_y,  newState_y[-1] - 1 )
         
 
         # Check if the food and the head collided
-        head_x = newState_x[ -1]
-        head_y = newState_y[ -1]
+        head_x = newState_x[-1]
+        head_y = newState_y[-1]
         if ( (self.current_food[0] == head_x ) and (self.current_food[1] == head_y )   ):
              
             print("The snake ate some food")
@@ -325,8 +346,8 @@ class Game:
             self.snake.body_y = np.append(self.snake.body_y, self.current_food[1]  )
             
             # Draw the new square
-            x = self.snake.body_x[ len(self.snake.body_x) - 1]
-            y = self.snake.body_y[ len(self.snake.body_y) - 1]
+            x = self.snake.body_x[-1]
+            y = self.snake.body_y[-1]
             self.rectangles[y][x].setFill("white") 
 
             # Place new food
@@ -341,12 +362,9 @@ class Game:
         delete_y = newState_y[0]
         self.rectangles[delete_y][delete_x].setFill("black")
 
-
         newState_x = np.delete(newState_x, 0)
         newState_y = np.delete(newState_y, 0)
         
-
-
         # Change the snake's data structures 
         self.snake.body_x = newState_x.copy()
         self.snake.body_y = newState_y.copy()
@@ -372,12 +390,24 @@ class Game:
         
         inputVector = self.compute_In_Vector(x, y)
               
-        #print("The input vector is ")
-        #print(inputVector)
-        #print("")
-    
-        move = self.neural_network.forwardProp(inputVector)
-            
+        outputVector = self.neural_network.forwardProp(inputVector)
+
+        for i in range(4):
+            move = np.argmax(outputVector.copy() )
+            # Check that the move is legal
+            if ( self.snake.isLegal( move, x, y, self.length_grid, self.width_grid ) == False ):
+                # print("Move rejected. Replanning")
+                outputVector[0][move] = -1
+            else:
+                break
+        
+        if ( np.sum(outputVector[0] ) == -4):
+            print("NO MOVE FOUND")
+            print("(x, y) is ")
+            print( str(x) + str(", ") + str(y) )
+            while(True):
+                pass
+
         if ( move == 0 ):
             move = "left"
 
@@ -390,6 +420,7 @@ class Game:
         elif ( move == 3 ):
             move = "up"
 
+        # print(move)
         return move
         
 
