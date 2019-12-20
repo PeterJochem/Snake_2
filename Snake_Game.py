@@ -120,7 +120,7 @@ def nextGeneration(doubles, rate):
     return doubles
 
 
-numGenerations = 1
+numGenerations = 2
 gen_now = generation_0(2000)
 
 rate_level = [5, 100, 5]
