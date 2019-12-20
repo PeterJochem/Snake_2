@@ -266,8 +266,8 @@ class Game:
             # Compute the statisitcs for the given neighbor
             returnVector[vectorIndex] = 100 * self.distance_food( x, y, prior_x, prior_y ) 
             # returnVector[vectorIndex + 1] = 100 * np.random.rand()    # self.distance_wall( x, y, prior_x, prior_y )
-            # returnVector[vectorIndex + 2] = 100 * (self.distance_body( x, y, True ) )[0]
-            #returnVector[vectorIndex + 3] =   (self.distance_body( x, y, forward[i] ) )[1]
+            # returnVector[vectorIndex + 1] = 100 * (self.distance_body( x, y, forward[i] ) )[0]
+            # returnVector[vectorIndex + 2] = 100 *  (self.distance_body( x, y, forward[i] ) )[1]
 
             vectorIndex = vectorIndex + numStats
         

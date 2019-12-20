@@ -98,7 +98,9 @@ def nextGeneration(doubles, rate):
         if ( allGames[i].neural_network.checkMoves() > 1.0  ):
             if ( allGames[i].moveNumber < 900 ):                
                 
+                                    
                 if ( current_gen == 1):
+                                              
                     if ( (allGames[i].score > 5) ):  # and (double == False)  ):
                         doubles.append( allGames[i].neural_network )
                     
@@ -145,7 +147,7 @@ for i in range(numGames):
     myGame.drawBoard()
 
     while ( True ):
-        time.sleep(0.4)
+        time.sleep(0.05)
         move = myGame.generate_NN_Move()
         if(myGame.neural_network.checkMoves() == True):
             pass 
