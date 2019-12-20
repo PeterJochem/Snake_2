@@ -34,17 +34,42 @@ class Neural_Network:
             count = count + 1
 
         if ( self.down ):
+            # Occurs
             count = count + 1
 
         if(self.left):
             count = count + 1
 
         if(self.right):
+            # Occurs
             count = count + 1
 
-        if ( count == 3):
-            print("TRIPLE")
-        #if (count == 2):
+        #if ( count == 3):
+        #    print("TRIPLE")
+       
+        #if ( self.up and self.right ):
+        #    print("up and right")
+        
+        #if ( self.down and self.right  ):
+        #    print("down and right ")
+        
+        # Observed
+        #if( self.up and self.left ):
+        #    print("up and left")
+        
+        # Observed
+        #if ( self.down and self.left ):
+        #    print("down and left")
+        
+        #if ( self.down and self.up ):
+        #    print("up and down")
+        
+        # Observed
+        #if ( self.right and self.left  ):
+        #    print("left and right")
+    
+
+       #if (count == 2):
         #    print("Double")
         #if (count == 1):
         #    print("SINGLE")
@@ -92,8 +117,8 @@ class Neural_Network:
             nextChild_solo.w1 = ( ((self.w1 + partner.w1) ) / 2.0) #+ ( self.createVector( -100.0, 100.0, len(self.w1), len(self.w1[0])  )  )
             nextChild_solo.w2 = ( ((self.w2 + partner.w2) ) / 2.0) #+ ( self.createVector( -100.0, 100.0, len(self.w2), len(self.w2[0] ) )  )
 
-            nextChild_couple.w1 = ( ((self.w1) ) ) + ( self.createVector( -100.0, 100.0, len(self.w1), len(self.w1[0])  )  )
-            nextChild_couple.w2 = ( ((self.w2) ) ) + ( self.createVector( -100.0, 100.0, len(self.w2), len(self.w2[0])  )  )
+            nextChild_couple.w1 = ( ((self.w1) ) ) + ( self.createVector( -1.0, 1.0, len(self.w1), len(self.w1[0])  )  )
+            nextChild_couple.w2 = ( ((self.w2) ) ) + ( self.createVector( -1.0, 1.0, len(self.w2), len(self.w2[0])  )  )
 
             offSpring.append(nextChild_solo)
             offSpring.append(nextChild_couple)
@@ -108,7 +133,7 @@ class Neural_Network:
     def init_Weights(self, numColumns, numRows):
         
         # Must make the weights smaller or else softmax returns infinite
-        returnVector = self.createVector(-1000.0, 1000.0, numColumns, numRows)
+        returnVector = self.createVector(-1.0, 1.0, numColumns, numRows)
 
         return returnVector
         
@@ -147,17 +172,26 @@ class Neural_Network:
         #print("")   
         #print( np.matmul( inputVector.copy().T, self.w1.copy() ) )
         # print("")   
+        
+        # WHY DOES RELU PREVENT TRIPLES??????
+        #layer_1 = self.relu( np.matmul( inputVector.copy().T, self.w1.copy() ) )  # + self.bias_1 )   
+        layer_1 =  np.matmul( inputVector.copy().T, self.w1.copy() )
 
-        layer_1 = self.relu( np.matmul( inputVector.copy().T, self.w1.copy() ) )  # + self.bias_1 )   
-            
         # Use the softmax function at the output layer
         #outputVector = # np.array( [ self.softmax( (np.matmul( layer_1.copy(), self.w2.copy() ) )[0] ) ] ) # + self.bias_2 )
         
-        outputVector = np.array( [ np.matmul( layer_1.copy(), self.w2.copy() )[0]  ] ) 
+        # outputVector = np.array( [ np.matmul( layer_1.copy(), self.w2.copy() )[0]  ] ) 
+        outputVector = np.matmul( layer_1.copy(), self.w2.copy() )
+    
 
         #print("") 
         #print(outputVector)
         #print("")
+        
+        #while(True):
+        #    pass
+        
+        
         return outputVector
 
 

@@ -38,10 +38,11 @@ class Game:
         self.id = 0
 
         # A tuple of the current food's location
+        self.current_food = [0, 0]
         self.current_food = self.placeFood()
         
-        # FIX ME!!
-        self.neural_network = Neural_Network( 4, 5, 4  )
+        # FIX ME!!                              # 5, 20
+        self.neural_network = Neural_Network( 8, 5, 4  )
 
     # Return the normalized distance
     def distance_wall(self, x, y, priorX, priorY):
@@ -235,7 +236,7 @@ class Game:
         
         # FIX ME!!
         # Let's start with just the 4 neighbor
-        numNeighbors = 4
+        numNeighbors = 8
         numStats = 1
         length = numNeighbors * numStats
         returnVector = np.zeros( (length, 1) )
@@ -249,9 +250,8 @@ class Game:
         # Create a list of tuples of each of the x and y locations
         # The statistic methods will check if the locations are legal or not 
         
-        # neighbors_list = self.generate_8_Neighbors(x, y) 
-        neighbors_list = self.generate_4_Neighbors(x, y)
-
+        neighbors_list = self.generate_8_Neighbors(x, y) 
+        # neighbors_list = self.generate_4_Neighbors(x, y)
 
         vectorIndex = 0
         forward = [True, False, True, False]
@@ -264,9 +264,9 @@ class Game:
             
             # Compute distance to it's tail? 
             # Compute the statisitcs for the given neighbor
-            returnVector[vectorIndex] =  self.distance_food( x, y, prior_x, prior_y ) 
-            #returnVector[vectorIndex + 1] =  self.distance_wall( x, y, prior_x, prior_y )
-            #returnVector[vectorIndex + 2] =  (self.distance_body( x, y, forward[i] ) )[0]
+            returnVector[vectorIndex] = 100 * self.distance_food( x, y, prior_x, prior_y ) 
+            # returnVector[vectorIndex + 1] = 100 * np.random.rand()    # self.distance_wall( x, y, prior_x, prior_y )
+            # returnVector[vectorIndex + 2] = 100 * (self.distance_body( x, y, True ) )[0]
             #returnVector[vectorIndex + 3] =   (self.distance_body( x, y, forward[i] ) )[1]
 
             vectorIndex = vectorIndex + numStats
@@ -279,7 +279,10 @@ class Game:
         
 
     def placeFood(self):
-            
+        
+        priorX = self.current_food[0]
+        priorY = self.current_food[1]
+
         # Place the food randomnly
         # Check that the spot is not occupied by the current snake
         
@@ -292,12 +295,15 @@ class Game:
                 
                 if ( (new_x == self.snake.body_x[i] ) and (new_y == self.snake.body_y[i] )  ):
                     continue
-            
+                if ( (priorX == new_x) or ( priorY == new_y) ):
+                    continue
+
+
             if( self.id == 0):
-                new_x = 4
-                new_y = 9 
-                self.id = 1
-                return [new_x, new_y]
+                 new_x = 4 # 4
+                 new_y = 9 # 9
+                 self.id = 1
+                 return [new_x, new_y]
             #elif(self.id == 1):
             #    new_x = 5
             #    new_y = 9    
@@ -491,6 +497,7 @@ class Game:
             move = np.argmax(outputVector.copy() )
             # Check that the move is legal
             if ( self.snake.isLegal( move, x, y, self.length_grid, self.width_grid ) == False ):
+                
                 # print("Move rejected. Replanning")
                 # outputVector[0][move] = -1
                 self.isOver = True
