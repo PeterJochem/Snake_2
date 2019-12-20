@@ -12,8 +12,8 @@ class Snake:
         self.color = color
         self.name = name 
 
-        self.body_x = np.array( [5 ] ) 
-        self.body_y = np.array( [5 ] )
+        self.body_x = np.array( [10 ] ) 
+        self.body_y = np.array( [10 ] )
     
 
     def isBody(self, x, y):

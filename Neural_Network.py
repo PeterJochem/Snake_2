@@ -2,7 +2,7 @@
 
 import numpy as np
 import random
-
+import copy
 
 class Neural_Network:
 
@@ -20,17 +20,87 @@ class Neural_Network:
         # Pass in the size of the intermediate vector
         self.w2 = self.init_Weights(numHidden, numOutput)
         self.bias_2 = np.ones(numOutput) * 0.1
+     
+        # For testing
+        self.up = False
+        self.down = False
+        self.left = False
+        self.right = False
+        ###########
     
+    def checkMoves(self):
+        count = 0
+        if (self.up):
+            count = count + 1
 
+        if ( self.down ):
+            count = count + 1
+
+        if(self.left):
+            count = count + 1
+
+        if(self.right):
+            count = count + 1
+
+        if ( count == 3):
+            print("TRIPLE")
+        #if (count == 2):
+        #    print("Double")
+        #if (count == 1):
+        #    print("SINGLE")
+        return count
+        
+
+    def checkDirections(self):
+
+        if (self.up and self.down and self.left and self.right):
+            return True
+        return False
+    
     def createVector(self, start, stop, numCol, numRow):
 
         returnVector = np.zeros( (numCol, numRow) )
-        
+
         for i in range(len( returnVector ) ):
             for j in range(len( returnVector[0] ) ):
-                returnVector[i][j] = random.uniform(start, stop)
+                returnVector[i][j] =random.uniform(start, stop)
         
         return returnVector
+    
+    # This method takes the current neural net and crosses it over
+    # to make the offspring
+    # Input:
+    # Output:
+    def crossOver(self, partner, numChildren):
+
+        offSpring = []
+        
+        # Re-set the state's fields
+        self.up = False
+        self.down = False
+        self.left = False
+        self.right = False
+        self.id = 0
+
+        # Try averaging all the entries +/ random noise
+
+        for i in range(numChildren):
+
+            nextChild_solo =  copy.deepcopy(self)
+            nextChild_couple = copy.deepcopy(self)
+
+            nextChild_solo.w1 = ( ((self.w1 + partner.w1) ) / 2.0) #+ ( self.createVector( -100.0, 100.0, len(self.w1), len(self.w1[0])  )  )
+            nextChild_solo.w2 = ( ((self.w2 + partner.w2) ) / 2.0) #+ ( self.createVector( -100.0, 100.0, len(self.w2), len(self.w2[0] ) )  )
+
+            nextChild_couple.w1 = ( ((self.w1) ) ) + ( self.createVector( -100.0, 100.0, len(self.w1), len(self.w1[0])  )  )
+            nextChild_couple.w2 = ( ((self.w2) ) ) + ( self.createVector( -100.0, 100.0, len(self.w2), len(self.w2[0])  )  )
+
+            offSpring.append(nextChild_solo)
+            offSpring.append(nextChild_couple)
+
+        return offSpring
+
+
 
     # This randomnly a single layer's of the NN's weights
     # Input: The length of the desired vector 
@@ -38,7 +108,7 @@ class Neural_Network:
     def init_Weights(self, numColumns, numRows):
         
         # Must make the weights smaller or else softmax returns infinite
-        returnVector = self.createVector(1.0, 2.0, numColumns, numRows)
+        returnVector = self.createVector(-1000.0, 1000.0, numColumns, numRows)
 
         return returnVector
         

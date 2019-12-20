@@ -13,6 +13,8 @@ class Game:
         self.score = 0
         
         self.isOver = False
+        
+        self.moveNumber = 0
 
         self.message = None
 
@@ -39,31 +41,53 @@ class Game:
         self.current_food = self.placeFood()
         
         # FIX ME!!
-        self.neural_network = Neural_Network( 16, 16, 4  )
+        self.neural_network = Neural_Network( 4, 5, 4  )
 
-    # Retrurn the normalized distance
+    # Return the normalized distance
     def distance_wall(self, x, y, priorX, priorY):
 
-        maxLength = -1.0
+        maxLength = maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )
 
+        # Check if we are on the diagonal
+        deltaX = int(x - priorX)
+        deltaY = int(y - priorY)
+        distance = 0.0
+        if ( (deltaX == 1) and (deltaY == 1) ):
+            # Distance to the bottom right corner   
+            distance = np.sqrt( ( (self.width_grid - x)**2) + ( (self.length_grid - y)**2) )  
+            return distance / maxLength
+
+        if ( (deltaX == -1) and (deltaY == 1) ):
+            # Distance to the bottom left corner
+            distance = np.sqrt( ( x**2) + ( (self.length_grid - y)**2) )
+            return distance / maxLength
+
+        if ( (deltaX == 1) and (deltaY == -1) ):
+            # Distance to the right top corner
+            distance = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) )
+            return distance / maxLength
+
+        if ( (deltaX == -1) and (deltaY == -1) ):
+            # Distance to the left top corner
+            distance = np.sqrt( ( x**2) + ( y**2) )
+            return distance / maxLength
+
+        # Check the single dimension movements
         if ( (x - priorX == 1) ):
-            maxLength = float(self.width_grid)
-        elif( (x - priorX == -1) ):
-            maxLength = float(-1 * self.width_grid)
+            maxLength = float(self.width_grid) 
         elif( y - priorY == 1  ):
-             maxLength = float(-1 * self.length_grid)
-        else:
-            maxLength = float(-1 * self.length_grid) 
+             maxLength = float(1 * self.length_grid)
 
         # Check that the (x, y) pair is legal
         if ( (x < 0) or (y < 0) ):
              return 0.0   
         elif ( (x >= self.width_grid) or (y >= self.length_grid) ):
             # EXPLAIN THIS
-            return maxLength
+            return 0.0
+       
         
-        # Normal cases 
-        if ( (x - priorX != 0) ):
+        # Normal 4-neighbor cases 
+        if ( ( int(x - priorX) != 0) ):
             # Moving to the right/left
             return (maxLength - x) / maxLength
 
@@ -81,7 +105,8 @@ class Game:
             return [0.0, 0.0]    
         
         elif ( (x >= self.width_grid) or (y >= self.length_grid) ):
-            return [maxLength, maxLength]
+            return [0.0, 0.0]
+            # return [maxLength, maxLength]
        
         # Traverse in this direction to see how far we are to any body part
         # Set this to the high value to avoid discontinuity in the statistic!
@@ -95,34 +120,38 @@ class Game:
         # Traverse the x-dimension forwards
         for i in range( self.length_grid - x ):
             
-            if ( self.snake.isBody(x + i, y) == False  ):
+            if ( self.snake.isBody(x + i, y) == True  ):
                 linear_to_body_x_forward = float(i) / maxLength
                 break  
         
         # Traverse the x-dimension backwards
         for i in range( x ):
 
-            if ( self.snake.isBody(x - i, y) == False ):
+            if ( self.snake.isBody(x - i, y) == True ):
                 linear_to_body_x_backwards = float(i) / maxLength
                 break
         
         # Traverse the y-dimension forwards
         for i in range( self.width_grid - y ):
 
-            if ( self.snake.isBody(x, y + i) == False ):
+            if ( self.snake.isBody(x, y + i) == True ):
                 linear_to_body_y_forward = float(i) / maxLength                    
                 break
 
         # Traverse the y-dimension backwards
         for i in range( y ):
 
-            if ( self.snake.isBody(x, y - i) == False ):
+            if ( self.snake.isBody(x, y - i) == True ):
                 linear_to_body_y_backwards = float(i) / maxLength
                 break
         
         # Return the tuple
-        return [linear_to_body_x_forward, linear_to_body_y_forward] 
-
+        if ( forward == True):
+            return [1.0, 1.0]
+            # return [linear_to_body_x_forward, linear_to_body_y_forward] 
+        else:
+            return [1.0, 1.0]
+            # return  [linear_to_body_x_backwards, linear_to_body_y_backwards]
 
 
     def distance_food(self, x, y, priorX, priorY):
@@ -133,29 +162,67 @@ class Game:
         #if ( (x < 0) or (y < 0) or (x >= self.width_grid) or (y >= self.length_grid) ):
         #    return -1
         #return np.sqrt( ( (x - self.current_food[0])**2) + ( (y - self.current_food[1])**2) ) / maxLength
+        
 
+        # Check the 8 neighbor diagonal cases first
+        deltaX = int(x - priorX)
+        deltaY = int(y - priorY)
+        distance = 0.0
+        
+        # distance = 1 if the food is in that direction
+        # distance = 0 if the food is not in that direction
+
+        if ( (deltaX == 1) and (deltaY == 1) ):
+            
+            if ( ( abs(x - self.current_food[0] ) == abs( y - self.current_food[1]  )  ) ):
+                return 1.0
+            else:
+                return 0.0
+
+        elif ( (deltaX == 1) and (deltaY == -1) ):
+            if ( ( abs(x - self.current_food[0] ) == abs( y - self.current_food[1]  )  ) ):
+                return  1.0
+            else:
+                return 0.0
+
+        elif ( (deltaX == -1) and (deltaY == 1) ):
+            if ( ( abs(x - self.current_food[0] ) == abs( y - self.current_food[1]  )  ) ):
+                return 1.0
+            else:
+                return 0.0
+
+        elif ( (deltaX == -1) and (deltaY == -1) ):
+            if ( abs( (x - self.current_food[0] ) == abs( y - self.current_food[1]  )  ) ):
+                return 1.0
+            else:
+                return 0.0
+
+    
 
         # maxLength = np.sqrt( ( (self.width_grid)**2) + ( (self.length_grid)**2) ) 
         maxLength = self.width_grid
         # Check that the (x,y) pair is legal
         if ( (x < 0) or (y < 0) or (x >= self.length_grid) or (y >= self.width_grid) ):
-            return -1
+            return 0.0
         
-        deltaX = x - priorX
-        deltaY = y - priorY
-       
-        if ( (deltaX == 1) and ( abs(x - self.current_food[0]) < abs(priorX - self.current_food[0])  )  ):
-            return abs(x - self.current_food[0])
-        elif ( (deltaY == 1) and (  abs(y - self.current_food[1]) < abs(priorY - self.current_food[1])  )  ):
-            return  abs(y - self.current_food[1])
+        if ( (deltaX != 0) and ( abs(x - self.current_food[0]) < abs(priorX - self.current_food[0])  )  ):
+            return 1.0  #abs(x - self.current_food[0])
+        
+        elif ( (deltaY != 0) and (  abs(y - self.current_food[1]) < abs(priorY - self.current_food[1])  )  ):
+            return 1.0  # abs(y - self.current_food[1])
         else:
             return 0.0
         
 
     
+    def generate_8_Neighbors(self, x, y):
+
+        return [ [x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1], [x + 1, y + 1], [x - 1, y - 1], [x - 1, y + 1], [x + 1, y - 1] ]
+
     def generate_4_Neighbors(self, x, y):
 
         return [ [x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1] ]
+
 
         
 
@@ -169,7 +236,7 @@ class Game:
         # FIX ME!!
         # Let's start with just the 4 neighbor
         numNeighbors = 4
-        numStats = 4
+        numStats = 1
         length = numNeighbors * numStats
         returnVector = np.zeros( (length, 1) )
 
@@ -181,8 +248,11 @@ class Game:
         
         # Create a list of tuples of each of the x and y locations
         # The statistic methods will check if the locations are legal or not 
-        neighbors_list = self.generate_4_Neighbors(x, y) 
- 
+        
+        # neighbors_list = self.generate_8_Neighbors(x, y) 
+        neighbors_list = self.generate_4_Neighbors(x, y)
+
+
         vectorIndex = 0
         forward = [True, False, True, False]
         for i in range( len(neighbors_list) ):
@@ -194,12 +264,12 @@ class Game:
             
             # Compute distance to it's tail? 
             # Compute the statisitcs for the given neighbor
-            returnVector[vectorIndex] = 10.0 * self.distance_food( x, y, prior_x, prior_y ) 
-            returnVector[vectorIndex + 1] =  10.0 * self.distance_wall( x, y, prior_x, prior_y )
-            returnVector[vectorIndex + 2] =  10.0 *  (self.distance_body( x, y, forward[i] ) )[0]
-            returnVector[vectorIndex + 3] =  10.0 *  (self.distance_body( x, y, forward[i] ) )[1]
+            returnVector[vectorIndex] =  self.distance_food( x, y, prior_x, prior_y ) 
+            #returnVector[vectorIndex + 1] =  self.distance_wall( x, y, prior_x, prior_y )
+            #returnVector[vectorIndex + 2] =  (self.distance_body( x, y, forward[i] ) )[0]
+            #returnVector[vectorIndex + 3] =   (self.distance_body( x, y, forward[i] ) )[1]
 
-            vectorIndex = vectorIndex + 4
+            vectorIndex = vectorIndex + numStats
         
         #print("")
         #print("The inVector is " )
@@ -224,22 +294,22 @@ class Game:
                     continue
             
             if( self.id == 0):
-                new_x = 5
-                new_y = 7 
+                new_x = 4
+                new_y = 9 
                 self.id = 1
                 return [new_x, new_y]
-            elif(self.id == 1):
-                new_x = 5
-                new_y = 9    
-                self.id = 2
-                return [new_x, new_y]
-            elif ( self.id == 2 ):
-                new_x = 5
-                new_y = 7
-                self.id = 3
-                return [new_x, new_y]
-            else:
-                return [new_x, new_y]
+            #elif(self.id == 1):
+            #    new_x = 5
+            #    new_y = 9    
+            #    self.id = 2
+            #    return [new_x, new_y]
+            #elif ( self.id == 2 ):
+            #    new_x = 5
+            #    new_y = 7
+            #    self.id = 3
+            #    return [new_x, new_y]
+            #else:
+            return [new_x, new_y]
 
     
     # Draw the board to the screen
@@ -314,6 +384,10 @@ class Game:
     # Input is either "left", "right", "up", "down"
     def nextState(self, command):
         
+        self.moveNumber = self.moveNumber + 1
+        if ( self.moveNumber > 1000):
+            self.isOver = True
+
         # Re-draw the food
         if ( self.window != None ):
             self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
@@ -432,15 +506,19 @@ class Game:
             #    pass
 
         if ( move == 0 ):
+            self.neural_network.left = True
             move = "left"
 
         elif ( move == 1 ):
+            self.neural_network.right = True
             move = "right"
 
         elif ( move == 2):
+            self.neural_network.down = True
             move = "down"
 
         elif ( move == 3 ):
+            self.neural_network.up = True
             move = "up"
 
         # print(move)
