@@ -11,7 +11,9 @@ class Neural_Network:
         
         self.numInputs = numInputs
         self.numHidden = numHidden
-        self.numOutput = numOutput
+        self.numOutput = numOutput     
+        # FIX ME!
+        self.numHiddenLayers = 1
 
         # Pass in the size of the input
         self.w1 = self.init_Weights(numInputs, numHidden)
@@ -195,6 +197,122 @@ class Neural_Network:
         return outputVector
 
 
+    # Save the weights
+    def pickle(self):       
+            
+        myFile = open("best_weights.txt", "w+")
+
+        # Record the meta-data
+        myFile.write( "input:" + str( self.numInputs ) )
+        myFile.write("\n")
+    
+        myFile.write( "numHiddenLayers:" + str( self.numHiddenLayers ) )
+        myFile.write("\n")
+
+        # Write the hidden layers - FIX to make more general!
+        # change the name of this to hidden width
+        myFile.write( "hidden_layer:" + str( self.numHidden ) ) 
+        myFile.write("\n")
+
+        myFile.write( "output:" + str( self.numOutput ) )
+        myFile.write("\n")
+
+        # Save the first set of weights
+        for i in range(len( self.w1) ):
+            for j in range (len (self.w1[0]) ):
+                myFile.write( str(self.w1[i, j] ) )
+                myFile.write( "\n" )
+        
+        # myFile.write("\n")
+        
+        # Save the second layer of weights 
+        for i in range(len( self.w2) ):
+            for j in range (len (self.w2[0]) ):
+                myFile.write( str(self.w2[i, j] ) )
+                myFile.write("\n")
+
+        myFile.close()
+    
+
+    # Load the weights from the file
+    def loadWeights(self): 
+        
+        myFile = open("best_weights.txt", "r")
+        
+        allLines = myFile.readlines()
+        lineNumber = 0
+        
+        # Create the empty weight sets - we will fill them below 
+        
+        self.w1 = np.zeros( (self.numInputs, self.numHidden) )
+        self.w2 = np.zeros( (self.numHidden, self.numOutput) )
+                
+        # Records where in the matrix to write the next value
+        currentRow = 0
+        currentColumn = 0
+        currentSet = 1
+        for x in allLines:
+            if ( lineNumber == 0):
+                self.numInputs = (x.split(":") )[1]
+                lineNumber = lineNumber + 1
+                continue
+            elif ( lineNumber == 1):
+                self.numHiddenLayers = (x.split(":") )[1] 
+                lineNumber = lineNumber + 1
+                continue
+            elif( lineNumber == 2 ):
+                self.numHidden = (x.split(":") )[1]
+                lineNumber = lineNumber + 1
+                continue
+            elif( lineNumber == 3 ):
+                self.numOutput = (x.split(":") )[1] 
+                lineNumber = lineNumber + 1
+                continue
+            
+            # Get the next value from the file 
+            value_now = x
+                
+            # Write the weights
+            if ( currentSet == 1 ):
+                self.w1[currentRow, currentColumn] = value_now  
+                 
+                # Check for change to next weight set 
+                # Update the weight sets  
+                # Increment the current row and column
+                # currentRow = currentRow + 1
+                currentColumn = currentColumn + 1
+                if ( currentColumn >= len(self.w1[0]) ):
+                    currentColumn = 0
+                    currentRow = currentRow + 1
+                
+                if ( currentRow >=  len(self.w1) ):
+                    currentRow = 0
+                    currentColumn = 0
+                    # Update to the next set 
+                    currentSet = 2
+                    # Update to the next set
+            
+            else:
+                self.w2[currentRow, currentColumn] = value_now
+
+                # Check for change to next weight set 
+                # Update the weight sets  
+                # Increment the current row and column
+                # currentRow = currentRow + 1
+                currentColumn = currentColumn + 1
+                if ( currentColumn >= len(self.w2[0]) ):
+                    currentColumn = 0
+                    currentRow = currentRow + 1
+
+                if ( currentRow >=  len(self.w2) ):
+                    currentRow = 0
+                    currentColumn = 0
+                    # Update to the next set 
+                    currentSet = 2
+                    # Update to the next set
+            
+        myFile.close()
+    
     # This method takes itself and a mate's weights
     # and mutate them to return a child 
     # Input:

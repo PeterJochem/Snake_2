@@ -10,5 +10,7 @@ Rather than using backpropogation to compute the gradient and then use stochasti
 
 Describe the pickling: I implemented weight saving features so that I could minimize traning times for debugging. Describe more...
 
+Include photo and link to a video
+
 
 Personally, I am very surprised that the genetic algorithm is robust enough to learn a good enough weight set!! 

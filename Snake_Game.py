@@ -123,31 +123,42 @@ def nextGeneration(doubles, rate):
 
 
 numGenerations = 2
-gen_now = generation_0(2000)
+# gen_now = generation_0(2000)
+myGame = Game(20, 20, 600, 500, False)
+gen_now = [ myGame.neural_network  ] 
 
-rate_level = [5, 100, 5]
-for i in range( numGenerations ):
-    current_gen = i
-    print("Generation: " + str(i) )
-    
-    gen_now = nextGeneration( gen_now, rate_level[i] )
-
-random. shuffle(gen_now)
+# Write a set of weights
+#gen_now[0].pickle()
+# Read back in the same set of weights
+#gen_now[0].loadWeights()
 
 
+#rate_level = [5, 100, 5]
+#for i in range( numGenerations ):
+#    current_gen = i
+#    print("Generation: " + str(i) )
+#    gen_now = nextGeneration( gen_now, rate_level[i] )
+
+#random. shuffle(gen_now)
 g = input("Press Enter to see the trained snake")
 
-numGames = 5
+numGames = len(gen_now)
+print("numGames = " + str(numGames) )
 for i in range(numGames):
     # print("Game: " + str(i) )
     myGame = Game(20, 20, 600, 500, True)
     
-    myGame.neural_network = gen_now[0]
+    # Write a set of weights
+    # gen_now[0].pickle()
+    # Read back in the same set of weights
+    gen_now[i].loadWeights()
+
+    myGame.neural_network = gen_now[i]
     
     myGame.drawBoard()
 
     while ( True ):
-        time.sleep(0.05)
+        time.sleep(0.01)
         move = myGame.generate_NN_Move()
         if(myGame.neural_network.checkMoves() == True):
             pass 
