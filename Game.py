@@ -25,11 +25,14 @@ class Game:
         self.length_window = length_window
         self.width_window = width_window
         
-        if ( display == True ):
+        if ( display == None ):
             self.window = GraphWin("Snake", self.length_window, self.width_window)
         else:
-            self.window = None
-
+            self.window = display  
+        
+        # else:
+        #    self.window = None
+            
         self.snake = Snake("Peter", "Blue")
 
         # FIX ME!!                              # 5, 20
@@ -611,14 +614,17 @@ class Game:
         self.board = self.rectangles
         
         if ( self.window != None ):
+            # pass
             self.drawInputLayer(20)
         if ( self.window != None ):
+            # pass
             self.drawHiddenLayer(100)
         if ( self.window != None ):
+            #pass
             self.drawOutputLayer(180)
-         
         # Draw lines over the original grid?
         if ( self.window != None ):
+            # pass
             self.drawWeights()
 
 
@@ -711,26 +717,33 @@ class Game:
             for i in range(len(self.neural_network.inputLayerFired) ):
                 if ( self.neural_network.inputLayerFired[i] == True ):
 
+                    #pass
                     self.neural_network.inputLayerCords[i].setOutline("red")
                 else:
 
+                    # pass
                     self.neural_network.inputLayerCords[i].setOutline("blue")
                     # self.neural_network.L2[i].setFill('blue')
 
             for i in range(len(self.neural_network.hiddenLayerFired) ):
                 if ( self.neural_network.hiddenLayerFired[i] == True ):
                     
+                    # pass 
                     self.neural_network.hiddenLayerCords[i].setOutline("red")
                 else:
                     
+                    # pass
                     self.neural_network.hiddenLayerCords[i].setOutline("blue") 
                     # self.neural_network.L2[i].setFill('blue')
 
             for i in range(len(self.neural_network.outputLayerFired) ):
                 if ( self.neural_network.outputLayerFired[i] == True ):
 
+                    # pass
                     self.neural_network.outputLayerCords[i].setOutline("red")
                 else:
+                    
+                    # pass
                     self.neural_network.outputLayerCords[i].setOutline("blue")
                     # self.neural_network.L2[i].setFill('blue')
             

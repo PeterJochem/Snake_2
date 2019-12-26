@@ -1,7 +1,7 @@
 from snake import Snake
 from Game import Game
 import numpy as np
-import graphics
+from graphics import *
 import time
 import random
 
@@ -10,17 +10,20 @@ import random
 # Create game 
 # Run the game's logic
 
+window = None
+
 rate_update = 4 
 
 current_gen = 0
 
 def generation_0( numGames ):
+    global window
 
     allGames = [  ]
 
     for i in range(numGames):
         # print("Game: " + str(i) )
-        myGame = Game(20, 20, 600, 500, False)
+        myGame = Game(20, 20, 1000, 900, window)
         allGames.append(myGame)
         myGame.drawBoard()
 
@@ -56,6 +59,7 @@ def nextGeneration(doubles, rate):
     
     global rate_update
     global current_gen
+    global window
     double = False
     
     children = []
@@ -70,7 +74,7 @@ def nextGeneration(doubles, rate):
     # Run a game for each child
     for i in range( len(children)  ):
         # print("Game: " + str(i) )
-        myGame = Game(20, 20, 600, 500, False)
+        myGame = Game(20, 20, 1000, 900, window)
             
         myGame.neural_network = children[i]
 
@@ -122,10 +126,14 @@ def nextGeneration(doubles, rate):
     return doubles
 
 
+# Window
+window = GraphWin("Snake", 1000, 900)
+# Window 
+
 numGenerations = 2
-# gen_now = generation_0(2000)
-myGame = Game(20, 20, 600, 500, False)
-gen_now = [ myGame.neural_network  ] 
+gen_now = generation_0(2000)
+#myGame = Game(20, 20, 600, 500, False)
+#gen_now = [ myGame.neural_network  ] 
 
 # Write a set of weights
 #gen_now[0].pickle()
@@ -133,11 +141,12 @@ gen_now = [ myGame.neural_network  ]
 #gen_now[0].loadWeights()
 
 
-#rate_level = [5, 100, 5]
-#for i in range( numGenerations ):
-#    current_gen = i
-#    print("Generation: " + str(i) )
-#    gen_now = nextGeneration( gen_now, rate_level[i] )
+rate_level = [5, 100, 5]
+for i in range( numGenerations ):
+    current_gen = i
+    print("Generation: " + str(i) )
+    
+    gen_now = nextGeneration( gen_now, rate_level[i] )
 
 #random. shuffle(gen_now)
 g = input("Press Enter to see the trained snake")
@@ -151,7 +160,7 @@ for i in range(numGames):
     # Write a set of weights
     # gen_now[0].pickle()
     # Read back in the same set of weights
-    gen_now[i].loadWeights()
+    # gen_now[i].loadWeights()
 
     myGame.neural_network = gen_now[i]
     
