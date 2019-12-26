@@ -21,6 +21,14 @@ class Neural_Network:
         self.inputLayerCords = []
         self.hiddenLayerCords = []
         self.outputLayerCords = []
+        # This records if the neuron fired or not
+        # List of booleans
+        self.inputLayerFired = []
+        self.hiddenLayerFired = []
+        self.outputLayerFired = []
+        # This records the line's representing the weights
+        self.L1 = []
+        self.L2 = []
         #####################
 
 
@@ -180,20 +188,42 @@ class Neural_Network:
     # Output: The maximum index of the output vector
     def forwardProp(self, inputVector):
         
-        #print("")   
-        #print( np.matmul( inputVector.copy().T, self.w1.copy() ) )
-        # print("")   
+        # Clear out the prior graphics lists
+        self.inputLayerFired = []
+        self.hiddenLayerFired = []
+        self.outputLayerFired = []
         
+        for i in range(len(inputVector) ):
+            
+            if ( inputVector[i] > 0 ):
+                self.inputLayerFired.append(True)
+            else:
+                self.inputLayerFired.append(False)
+
         # WHY DOES RELU PREVENT TRIPLES??????
         #layer_1 = self.relu( np.matmul( inputVector.copy().T, self.w1.copy() ) )  # + self.bias_1 )   
         layer_1 =  np.matmul( inputVector.copy().T, self.w1.copy() )
+        
+        for i in range(len(layer_1[0]) ):
 
+            if ( layer_1[0][i] > 0 ):
+                self.hiddenLayerFired.append(True)
+            else:
+                self.hiddenLayerFired.append(False)
+ 
         # Use the softmax function at the output layer
         #outputVector = # np.array( [ self.softmax( (np.matmul( layer_1.copy(), self.w2.copy() ) )[0] ) ] ) # + self.bias_2 )
         
         # outputVector = np.array( [ np.matmul( layer_1.copy(), self.w2.copy() )[0]  ] ) 
         outputVector = np.matmul( layer_1.copy(), self.w2.copy() )
-    
+        
+        for i in range(len(outputVector[0]) ):
+
+            if ( outputVector[0][i] > 0 ):
+                self.outputLayerFired.append(True)
+            else:
+                self.outputLayerFired.append(False)
+
 
         #print("") 
         #print(outputVector)

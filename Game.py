@@ -339,11 +339,12 @@ class Game:
             # Draw the center neuron(s)
             if ( isEven == False):
                 nextNeuron = Point( center, yCord)
-                self.neural_network.inputLayerCords.append( nextNeuron )
                 ratio = 0.01
 
                 # Draw the next neuron
                 cir = Circle(nextNeuron, ratio * self.length_window )
+                self.neural_network.inputLayerCords.append( cir )
+
                 priorLeft = center
                 priorRight = center
                 cir.draw(self.window)
@@ -351,19 +352,20 @@ class Game:
                 cir.setFill('blue')
             else:
                 centerLeft = Point( center - (increment / 2.0), yCord)
-                self.neural_network.inputLayerCords.append( centerLeft )
                 centerRight = Point( center + (increment / 2.0), yCord)
-                self.neural_network.inputLayerCords.append( centerRight )
                 
                 priorLeft =  center - (increment / 2.0)
                 priorRight =  center + (increment / 2.0)
                 ratio = 0.01
                 # Draw the next neuron
                 cir = Circle(centerLeft, ratio * self.length_window )
+                self.neural_network.inputLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
+                
                 cir = Circle(centerRight, ratio * self.length_window )
+                self.neural_network.inputLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
@@ -372,19 +374,19 @@ class Game:
             for i in range(0, iterations):
                 nextNeuronRight = Point( priorRight + increment, yCord)
                 nextNeuronLeft = Point( priorLeft - increment, yCord)
-                self.neural_network.inputLayerCords.append( nextNeuronRight )
-                self.neural_network.inputLayerCords.append( nextNeuronLeft )
 
                 priorRight = priorRight + increment
                 priorLeft = priorLeft - increment
                 ratio = 0.01
                 # Draw the next right neuron
                 cir = Circle(nextNeuronRight, ratio * self.length_window )
+                self.neural_network.inputLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
                 # Draw the next left neuron
                 cir = Circle(nextNeuronLeft, ratio * self.length_window )
+                self.neural_network.inputLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
@@ -412,11 +414,11 @@ class Game:
             # Draw the center neuron(s)
             if ( isEven == False):
                 nextNeuron = Point( center, yCord)
-                self.neural_network.hiddenLayerCords.append( nextNeuron )
                 
                 ratio = 0.01
                 # Draw the next neuron
                 cir = Circle(nextNeuron, ratio * self.length_window )
+                self.neural_network.hiddenLayerCords.append( cir )
                 priorLeft = center
                 priorRight = center
                 cir.draw(self.window)
@@ -425,18 +427,18 @@ class Game:
             else:
                 centerLeft = Point( center - (increment / 2.0), yCord)
                 centerRight = Point( center + (increment / 2.0), yCord)
-                self.neural_network.hiddenLayerCords.append( centerLeft )
-                self.neural_network.hiddenLayerCords.append( centerRight )
                 
                 priorLeft =  center - (increment / 2.0)
                 priorRight =  center + (increment / 2.0)
                 ratio = 0.01
                 # Draw the next neuron
                 cir = Circle(centerLeft, ratio * self.length_window )
+                self.neural_network.hiddenLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
                 cir = Circle(centerRight, ratio * self.length_window )
+                self.neural_network.hiddenLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
@@ -444,19 +446,19 @@ class Game:
             for i in range(0, iterations):
                 nextNeuronRight = Point( priorRight + increment, yCord)
                 nextNeuronLeft = Point( priorLeft - increment, yCord)
-                self.neural_network.hiddenLayerCords.append( nextNeuronLeft )
-                self.neural_network.hiddenLayerCords.append( nextNeuronRight )
 
                 priorRight = priorRight + increment
                 priorLeft = priorLeft - increment
                 ratio = 0.01
                 # Draw the next right neuron
                 cir = Circle(nextNeuronRight, ratio * self.length_window )
+                self.neural_network.hiddenLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
                 # Draw the next left neuron
                 cir = Circle(nextNeuronLeft, ratio * self.length_window )
+                self.neural_network.hiddenLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
@@ -483,11 +485,12 @@ class Game:
             # Draw the center neuron(s)
             if ( isEven == False):
                 nextNeuron = Point( center, yCord)
-                self.neural_network.outputLayerCords.append( nextNeuron )
-
+                
                 ratio = 0.01
                 # Draw the next neuron
                 cir = Circle(nextNeuron, ratio * self.length_window )
+                self.neural_network.outputLayerCords.append( cir )
+               
                 priorLeft = center
                 priorRight = center
                 cir.draw(self.window)
@@ -496,18 +499,18 @@ class Game:
             else:
                 centerLeft = Point( center - (increment / 2.0), yCord)
                 centerRight = Point( center + (increment / 2.0), yCord)
-                self.neural_network.outputLayerCords.append( centerLeft )
-                self.neural_network.outputLayerCords.append( centerRight )
                 
                 priorLeft =  center - (increment / 2.0)
                 priorRight =  center + (increment / 2.0)
                 ratio = 0.01
                 # Draw the next neuron
                 cir = Circle(centerLeft, ratio * self.length_window )
+                self.neural_network.outputLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
                 cir = Circle(centerRight, ratio * self.length_window )
+                self.neural_network.outputLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
@@ -515,35 +518,35 @@ class Game:
             for i in range(0, iterations):
                 nextNeuronRight = Point( priorRight + increment, yCord)
                 nextNeuronLeft = Point( priorLeft - increment, yCord)
-                # self.neural_network.outputLayerCords.append( centerLeft )
-                self.neural_network.outputLayerCords.append( nextNeuronRight )
-                self.neural_network.outputLayerCords.append( nextNeuronLeft )
                 
                 priorRight = priorRight + increment
                 priorLeft = priorLeft - increment
                 ratio = 0.01
                 # Draw the next right neuron
                 cir = Circle(nextNeuronRight, ratio * self.length_window)
+                self.neural_network.outputLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
                 # Draw the next left neuron
                 cir = Circle(nextNeuronLeft, ratio * self.length_window )
+                self.neural_network.outputLayerCords.append( cir )
                 cir.draw(self.window)
                 cir.setOutline('black')
                 cir.setFill('blue')
-
     
     def drawWeights(self):
         
         # records the lines
-        # L1 = []
+        self.neural_network.L1 = []
+        self.neural_network.L2 = []
 
         # Draw the weights from the input layer to the hidden layer
         for i in range( self.neural_network.numInputs):
             for j in range( self.neural_network.numHidden ):
 
-                line = Line( self.neural_network.inputLayerCords[i],  self.neural_network.hiddenLayerCords[j]  )
+                line = Line( self.neural_network.inputLayerCords[i].getCenter(),  self.neural_network.hiddenLayerCords[j].getCenter()  )
+                self.neural_network.L1.append(line)
                 line.setFill('white')
                 line.draw(self.window)
                 
@@ -551,7 +554,8 @@ class Game:
         for i in range( self.neural_network.numHidden):
             for j in range( self.neural_network.numOutput ):
 
-                line = Line( self.neural_network.hiddenLayerCords[i],  self.neural_network.outputLayerCords[j]  )
+                line = Line( self.neural_network.hiddenLayerCords[i].getCenter(),  self.neural_network.outputLayerCords[j].getCenter()  )
+                self.neural_network.L2.append(line)
                 line.setFill('white')
                 line.draw(self.window)
 
@@ -695,6 +699,37 @@ class Game:
 
             # Place new food
             self.current_food = self.placeFood()
+            
+            
+            # Change the color of the fired neurons
+            #for i in range( numInputs ):
+            #    if ()
+            for i in range(len(self.neural_network.inputLayerFired) ):
+                if ( self.neural_network.inputLayerFired[i] == True ):
+
+                    self.neural_network.inputLayerCords[i].setOutline("red")
+                else:
+
+                    self.neural_network.inputLayerCords[i].setOutline("blue")
+                    # self.neural_network.L2[i].setFill('blue')
+
+            for i in range(len(self.neural_network.hiddenLayerFired) ):
+                if ( self.neural_network.hiddenLayerFired[i] == True ):
+                    
+                    self.neural_network.hiddenLayerCords[i].setOutline("red")
+                else:
+                    
+                    self.neural_network.hiddenLayerCords[i].setOutline("blue") 
+                    # self.neural_network.L2[i].setFill('blue')
+
+            for i in range(len(self.neural_network.outputLayerFired) ):
+                if ( self.neural_network.outputLayerFired[i] == True ):
+
+                    self.neural_network.outputLayerCords[i].setOutline("red")
+                else:
+                    self.neural_network.outputLayerCords[i].setOutline("blue")
+                    # self.neural_network.L2[i].setFill('blue')
+
 
             return
 
