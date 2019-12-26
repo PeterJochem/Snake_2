@@ -544,22 +544,28 @@ class Game:
         # Draw the weights from the input layer to the hidden layer
         for i in range( self.neural_network.numInputs):
             for j in range( self.neural_network.numHidden ):
+                
+                column = int( i / (len(self.neural_network.w1)) )
+                row =  int( i % (len(self.neural_network.w1)) )
 
                 line = Line( self.neural_network.inputLayerCords[i].getCenter(),  self.neural_network.hiddenLayerCords[j].getCenter()  )
                 self.neural_network.L1.append(line)
-                line.setFill('white')
+                line.setFill( color_rgb( int( 150 - abs(self.neural_network.w1[row][column] * 120 ) ), 0, 0)  )
+                
                 line.draw(self.window)
                 
         # Draw the weights from the hidden layer to the output layer
         for i in range( self.neural_network.numHidden):
             for j in range( self.neural_network.numOutput ):
+                column = int( i / (len(self.neural_network.w2)) )
+                row =  int( i % (len(self.neural_network.w2)) )
 
                 line = Line( self.neural_network.hiddenLayerCords[i].getCenter(),  self.neural_network.outputLayerCords[j].getCenter()  )
                 self.neural_network.L2.append(line)
-                line.setFill('white')
+                 
+                line.setFill( color_rgb( int( 150 - abs(self.neural_network.w2[row][column] * 120 ) ), 0, 0) )
                 line.draw(self.window)
-
-
+        
 
     # Draw the board to the screen
     def drawBoard(self):
@@ -702,8 +708,6 @@ class Game:
             
             
             # Change the color of the fired neurons
-            #for i in range( numInputs ):
-            #    if ()
             for i in range(len(self.neural_network.inputLayerFired) ):
                 if ( self.neural_network.inputLayerFired[i] == True ):
 
@@ -729,7 +733,7 @@ class Game:
                 else:
                     self.neural_network.outputLayerCords[i].setOutline("blue")
                     # self.neural_network.L2[i].setFill('blue')
-
+            
 
             return
 

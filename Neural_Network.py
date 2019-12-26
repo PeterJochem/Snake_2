@@ -30,6 +30,11 @@ class Neural_Network:
         self.L1 = []
         self.L2 = []
         #####################
+        
+        # For forward propogating values
+        self.layer_1 = None
+        self.inputVector = None
+        self.outputVector = None
 
 
         # Pass in the size of the input
@@ -193,6 +198,8 @@ class Neural_Network:
         self.hiddenLayerFired = []
         self.outputLayerFired = []
         
+        self.inputVector = inputVector
+
         for i in range(len(inputVector) ):
             
             if ( inputVector[i] > 0 ):
@@ -202,11 +209,11 @@ class Neural_Network:
 
         # WHY DOES RELU PREVENT TRIPLES??????
         #layer_1 = self.relu( np.matmul( inputVector.copy().T, self.w1.copy() ) )  # + self.bias_1 )   
-        layer_1 =  np.matmul( inputVector.copy().T, self.w1.copy() )
+        self.layer_1 =  np.matmul( inputVector.copy().T, self.w1.copy() )
         
-        for i in range(len(layer_1[0]) ):
+        for i in range(len(self.layer_1[0]) ):
 
-            if ( layer_1[0][i] > 0 ):
+            if ( self.layer_1[0][i] > 0 ):
                 self.hiddenLayerFired.append(True)
             else:
                 self.hiddenLayerFired.append(False)
@@ -215,25 +222,17 @@ class Neural_Network:
         #outputVector = # np.array( [ self.softmax( (np.matmul( layer_1.copy(), self.w2.copy() ) )[0] ) ] ) # + self.bias_2 )
         
         # outputVector = np.array( [ np.matmul( layer_1.copy(), self.w2.copy() )[0]  ] ) 
-        outputVector = np.matmul( layer_1.copy(), self.w2.copy() )
+        self.outputVector = np.matmul( self.layer_1.copy(), self.w2.copy() )
         
-        for i in range(len(outputVector[0]) ):
+        for i in range(len(self.outputVector[0]) ):
 
-            if ( outputVector[0][i] > 0 ):
+            if ( self.outputVector[0][i] > 0 ):
                 self.outputLayerFired.append(True)
             else:
                 self.outputLayerFired.append(False)
 
-
-        #print("") 
-        #print(outputVector)
-        #print("")
         
-        #while(True):
-        #    pass
-        
-        
-        return outputVector
+        return self.outputVector
 
 
     # Save the weights
