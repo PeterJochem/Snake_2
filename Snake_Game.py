@@ -146,7 +146,7 @@ numGames = len(gen_now)
 print("numGames = " + str(numGames) )
 for i in range(numGames):
     # print("Game: " + str(i) )
-    myGame = Game(20, 20, 600, 500, True)
+    myGame = Game(20, 20, 1000, 900, True)
     
     # Write a set of weights
     # gen_now[0].pickle()
@@ -158,7 +158,7 @@ for i in range(numGames):
     myGame.drawBoard()
 
     while ( True ):
-        time.sleep(0.01)
+        time.sleep(0.1)
         move = myGame.generate_NN_Move()
         if(myGame.neural_network.checkMoves() == True):
             pass 

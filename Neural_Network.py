@@ -15,6 +15,15 @@ class Neural_Network:
         # FIX ME!
         self.numHiddenLayers = 1
 
+        #### For graphics ####
+        # These record where in the graphic's window's coordinates
+        # where we are placing the neuron objects
+        self.inputLayerCords = []
+        self.hiddenLayerCords = []
+        self.outputLayerCords = []
+        #####################
+
+
         # Pass in the size of the input
         self.w1 = self.init_Weights(numInputs, numHidden)
         self.bias_1 = np.ones(numHidden) * 0.1
@@ -253,19 +262,19 @@ class Neural_Network:
         currentSet = 1
         for x in allLines:
             if ( lineNumber == 0):
-                self.numInputs = (x.split(":") )[1]
+                self.numInputs = int( (x.split(":") )[1] )
                 lineNumber = lineNumber + 1
                 continue
             elif ( lineNumber == 1):
-                self.numHiddenLayers = (x.split(":") )[1] 
+                self.numHiddenLayers = int( (x.split(":") )[1] )
                 lineNumber = lineNumber + 1
                 continue
             elif( lineNumber == 2 ):
-                self.numHidden = (x.split(":") )[1]
+                self.numHidden = int( (x.split(":") )[1] )
                 lineNumber = lineNumber + 1
                 continue
             elif( lineNumber == 3 ):
-                self.numOutput = (x.split(":") )[1] 
+                self.numOutput = int( (x.split(":") )[1] ) 
                 lineNumber = lineNumber + 1
                 continue
             
