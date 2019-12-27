@@ -343,6 +343,9 @@ class Game:
             if ( isEven == False):
                 nextNeuron = Point( center, yCord)
                 ratio = 0.01
+                
+                # Record the center 
+                self.neural_network.inputLayerCenterCord.append(nextNeuron)
 
                 # Draw the next neuron
                 cir = Circle(nextNeuron, ratio * self.length_window )
@@ -357,6 +360,9 @@ class Game:
                 centerLeft = Point( center - (increment / 2.0), yCord)
                 centerRight = Point( center + (increment / 2.0), yCord)
                 
+                # Record the center
+                self.neural_network.inputLayerCenterCord.append(centerRight)
+
                 priorLeft =  center - (increment / 2.0)
                 priorRight =  center + (increment / 2.0)
                 ratio = 0.01
@@ -615,18 +621,18 @@ class Game:
         
         if ( self.window != None ):
             # pass
-            self.drawInputLayer(20)
+            self.drawInputLayer(100)
         if ( self.window != None ):
             # pass
-            self.drawHiddenLayer(100)
+            self.drawHiddenLayer(190)
         if ( self.window != None ):
             #pass
-            self.drawOutputLayer(180)
+            self.drawOutputLayer(280)
         # Draw lines over the original grid?
         if ( self.window != None ):
             # pass
             self.drawWeights()
-
+        
 
         # Draw the snake's body
         x = self.snake.body_x[0]
@@ -635,13 +641,26 @@ class Game:
 
             self.rectangles[y][x].setFill(self.snake.color)
             # Draw the name and the score
-            self.message = Text( Point(50, 50), "Score: " + str(self.score) )
+            
+            center_x = self.neural_network.inputLayerCenterCord[0].getX()
+            center_y = self.neural_network.inputLayerCenterCord[0].getY() - 80
+
+            self.message = Text( Point(center_x, center_y), "Score: " + str(self.score) )
             self.message.setSize(18)
             self.message.setTextColor("white")
             self.message.draw(self.window)
+            
+            # Draw the generation and game number
+            self.message = Text( Point(center_x, center_y + 30 ), "Generation: " + str(1) )
+            self.message.setSize(18)
+            self.message.setTextColor("white")
+            self.message.draw(self.window)
+
+         
+         
             # Draw the food
             try:
-                self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
+                self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("blue")
             except:
                 pass
 
@@ -650,14 +669,14 @@ class Game:
     # This moves the game from one state to the next
     # Input is either "left", "right", "up", "down"
     def nextState(self, command):
-         
+        
         self.moveNumber = self.moveNumber + 1
         if ( self.moveNumber > 1000):
             self.isOver = True
 
         # Re-draw the food
         if ( self.window != None ):
-            self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("purple")
+            self.rectangles[ self.current_food[1] ][ self.current_food[0]  ].setFill("blue")
         
         # Update the internal data structures 
         newState_x = self.snake.body_x.copy() 
@@ -712,43 +731,32 @@ class Game:
             # Place new food
             self.current_food = self.placeFood()
             
-            
-            # Change the color of the fired neurons
-            for i in range(len(self.neural_network.inputLayerFired) ):
-                if ( self.neural_network.inputLayerFired[i] == True ):
-
-                    #pass
-                    self.neural_network.inputLayerCords[i].setOutline("red")
-                else:
-
-                    # pass
-                    self.neural_network.inputLayerCords[i].setOutline("blue")
-                    # self.neural_network.L2[i].setFill('blue')
-
-            for i in range(len(self.neural_network.hiddenLayerFired) ):
-                if ( self.neural_network.hiddenLayerFired[i] == True ):
-                    
-                    # pass 
-                    self.neural_network.hiddenLayerCords[i].setOutline("red")
-                else:
-                    
-                    # pass
-                    self.neural_network.hiddenLayerCords[i].setOutline("blue") 
-                    # self.neural_network.L2[i].setFill('blue')
-
-            for i in range(len(self.neural_network.outputLayerFired) ):
-                if ( self.neural_network.outputLayerFired[i] == True ):
-
-                    # pass
-                    self.neural_network.outputLayerCords[i].setOutline("red")
-                else:
-                    
-                    # pass
-                    self.neural_network.outputLayerCords[i].setOutline("blue")
-                    # self.neural_network.L2[i].setFill('blue')
-            
-
             return
+
+        # Change the color of the fired neurons
+        for i in range(len(self.neural_network.inputLayerFired) ):
+            if ( self.neural_network.inputLayerFired[i] == True ):
+
+                self.neural_network.inputLayerCords[i].setOutline("red")
+                self.neural_network.inputLayerCords[i].setWidth(4)
+            else:
+                self.neural_network.inputLayerCords[i].setOutline("black")
+
+        for i in range(len(self.neural_network.hiddenLayerFired) ):
+            if ( self.neural_network.hiddenLayerFired[i] == True ):
+                
+                self.neural_network.hiddenLayerCords[i].setOutline("red")
+                self.neural_network.hiddenLayerCords[i].setWidth(4)
+            else:
+                self.neural_network.hiddenLayerCords[i].setOutline("black") 
+
+        for i in range(len(self.neural_network.outputLayerFired) ):
+            if ( self.neural_network.outputLayerFired[i] == True ):
+
+                self.neural_network.outputLayerCords[i].setOutline("red")
+                self.neural_network.outputLayerCords[i].setWidth(4)
+            else:
+                self.neural_network.outputLayerCords[i].setOutline("black")
 
 
         # This is the caboose of the snake and will be deleted

@@ -18,6 +18,7 @@ class Neural_Network:
         #### For graphics ####
         # These record where in the graphic's window's coordinates
         # where we are placing the neuron objects
+        self.inputLayerCenterCord = []
         self.inputLayerCords = []
         self.hiddenLayerCords = []
         self.outputLayerCords = []
